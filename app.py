@@ -5,9 +5,27 @@ import re
 import yfinance as yf
 from bs4 import BeautifulSoup
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = 'dubu_finance_ipo_master'
+
+# ---------- STORAGE (Vercel fix) ----------
+DB_FILE = '/tmp/users.db' if os.environ.get('VERCEL') else 'users.db'
+
+def get_db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db()
+    conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)")
+    conn.execute("CREATE TABLE IF NOT EXISTS favorites (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, symbol TEXT NOT NULL, UNIQUE(username, symbol))")
+    conn.commit()
+    conn.close()
+
+init_db()
 
 # ---------- HALKARZ.COM DETAYLI SCRAPER ----------
 def get_ipo_list():
@@ -16,18 +34,14 @@ def get_ipo_list():
         headers = {'User-Agent': 'Mozilla/5.0'}
         r = requests.get(url, headers=headers, timeout=5)
         soup = BeautifulSoup(r.content, 'html.parser')
-        
         items = []
-        # Site yapısına göre kartları buluyoruz
         cards = soup.select('article')[:10]
         for card in cards:
             title_el = card.select_one('h3') or card.select_one('.entry-title')
             if not title_el: continue
-            
             title = title_el.get_text(strip=True)
             slug = title.lower().replace(" ","-").replace(".","").replace("aş","").strip()
             date_el = card.select_one('.halka-arz-tarih') or card.select_one('time')
-            
             items.append({
                 "title": title,
                 "date": date_el.get_text(strip=True) if date_el else "Yakında",
@@ -42,8 +56,6 @@ def api_halkaarz(): return jsonify(get_ipo_list())
 
 @app.route('/halkaarz/<slug>')
 def halkaarz_detay(slug):
-    # Bu kısımda normalde o slug ile halkarz.com/slug adresine gidip detay çekilir
-    # Demo verisi olarak zengin içerik hazırladım:
     ipo_data = {
         "title": slug.replace("-"," ").title() + " A.Ş.",
         "fiyat": "₺ 21,10",
@@ -56,7 +68,7 @@ def halkaarz_detay(slug):
     }
     return render_template('halkaarz_detay.html', ipo=ipo_data)
 
-# ---------- STANDART PAGES ----------
+# ---------- PAGES ----------
 @app.route('/')
 def index(): return render_template('index.html')
 @app.route('/bist100.html')
@@ -80,12 +92,12 @@ def get_news():
 
 @app.route('/api/user')
 def get_user(): return jsonify({"user": session.get('user')})
+
 @app.route('/api/favorites', methods=['GET'])
 def get_favorites():
     u = session.get('user')
     if not u: return jsonify({"favorites": []})
-    conn = sqlite3.connect('users.db')
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
     rows = conn.execute("SELECT symbol FROM favorites WHERE username=?", (u,)).fetchall()
     conn.close()
     return jsonify({"favorites": [r['symbol'] for r in rows]})
@@ -94,11 +106,11 @@ def get_favorites():
 def toggle_fav(symbol):
     u = session.get('user')
     if not u: return jsonify({"error":"Giriş yapın"}), 401
-    conn = sqlite3.connect('users.db')
+    conn = get_db()
     if request.method == 'POST': conn.execute("INSERT OR IGNORE INTO favorites (username, symbol) VALUES (?,?)",(u,symbol))
     else: conn.execute("DELETE FROM favorites WHERE username=? AND symbol=?",(u,symbol))
     conn.commit(); conn.close()
     return jsonify({"status":"ok"})
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    app.run(debug=True)
