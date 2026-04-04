@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kıymetli Madenler - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .metals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .metal-card { background: var(--color-surface); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary); }
+        .metal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .metal-name { font-weight: 700; font-size: 1.1rem; color: var(--color-primary); }
+        .metal-price { font-size: 1.8rem; font-weight: 800; color: var(--color-text); font-family: var(--font-data); }
+        .metal-change { font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-gem">◆</span>
+            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+        </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+        <nav class="burger-menu" id="burger-menu">
+            <ul>
+                <li><a href="/">Ana Sayfa</a></li>
+                <li><a href="/bist100.html">BİST 100</a></li>
+                <li><a href="/bist30.html">BİST 30</a></li>
+                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
+                <li><a href="/takip">⭐ Takip Ettiklerim</a></li>
+                <li class="burger-divider"></li>
+                <li id="burger-auth"></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="max-width:1200px; margin: 3rem auto; padding: 0 2rem;">
+        <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">Kıymetli Maden Terminali</h1>
+        <p style="color:var(--color-muted); margin-top:0.5rem;">Canlı Altın, Gümüş, Platin ve Paladyum ons fiyatları.</p>
+        
+        <div class="metals-grid" id="metals-grid">
+            <p>Veriler yükleniyor...</p>
+        </div>
+
+        <div style="margin-top:4rem; height:500px; position:relative; overflow:hidden; border-radius:12px;">
+            <h2 style="margin-bottom:1.5rem; color:var(--color-text);">Ons Altın Teknik Grafik</h2>
+            <div id="tv-gold" style="height:440px;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true,
+                  "symbol": "TVC:GOLD",
+                  "interval": "D",
+                  "theme": "light",
+                  "style": "3",
+                  "locale": "tr",
+                  "container_id": "tv-gold"
+                });
+            </script>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/metals').then(r => r.json()).then(data => {
+                const grid = document.getElementById('metals-grid');
+                grid.innerHTML = '';
+                data.forEach(m => {
+                    const cls = m.change > 0 ? 'val-up' : (m.change < 0 ? 'val-down' : '');
+                    const sign = m.change > 0 ? '+' : '';
+                    grid.innerHTML += `
+                        <div class="metal-card">
+                            <div class="metal-header"><span class="metal-name">${m.name}</span></div>
+                            <div class="metal-price">${m.price.toLocaleString('tr-TR')} $</div>
+                            <div class="metal-change ${cls}">${sign}${m.change}%</div>
+                        </div>`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

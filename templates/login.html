@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap | Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .auth-wrap { max-width: 440px; margin: 5rem auto; padding: 0 1.5rem; }
+        .auth-card { background: var(--color-surface); border-radius: 12px; padding: 2.5rem; box-shadow: var(--shadow-lg); }
+        .auth-title { font-family: var(--font-display); font-size: 1.75rem; font-weight: 900; color: var(--color-primary); text-align: center; margin-bottom: 2rem; }
+        .auth-logo { text-align: center; font-family: var(--font-display); font-size: 1.2rem; color: var(--color-primary); margin-bottom: 0.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; color: var(--color-primary); }
+        .form-group input { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #d1d5db; border-radius: 7px; font-family: var(--font-body); font-size: 0.95rem; transition: border-color 0.2s; outline: none; }
+        .form-group input:focus { border-color: var(--color-primary); }
+        .auth-btn { width: 100%; background: var(--color-primary); color: #fff; border: none; padding: 0.9rem; border-radius: 7px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: var(--font-display); transition: opacity 0.2s; }
+        .auth-btn:hover { opacity: 0.88; }
+        .auth-link { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--color-muted); }
+        .auth-link a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
+        .flash-msg { background: rgba(220,38,38,0.08); color: #dc2626; padding: 0.8rem 1rem; border-radius: 7px; margin-bottom: 1.25rem; font-size: 0.9rem; font-weight: 500; text-align: center; }
+    </style>
+</head>
+<body style="background: var(--color-bg);">
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-gem">◆</span>
+            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+        </a>
+    </header>
+
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <div class="auth-title">Giriş Yap</div>
+
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}{% for message in messages %}
+                <div class="flash-msg">{{ message }}</div>
+              {% endfor %}{% endif %}
+            {% endwith %}
+
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="username">Kullanıcı Adı</label>
+                    <input type="text" id="username" name="username" required placeholder="kullanici_adi">
+                </div>
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="auth-btn">Giriş Yap</button>
+            </form>
+            <div class="auth-link">Hesabınız yok mu? <a href="/register">Kayıt Olun</a></div>
+        </div>
+    </div>
+</body>
+</html>

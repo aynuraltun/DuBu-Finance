@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halka Arzlar - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Open Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .ipo-container { max-width: 1000px; margin: 3rem auto; padding: 2rem; background: var(--color-surface); border-radius: 12px; box-shadow: var(--shadow-md); }
+        .ipo-title { font-family: var(--font-display); color: var(--color-primary); font-size: 2rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid rgba(1, 59, 44, 0.1); }
+        .ipo-detailed-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .ipo-card { border: 1px solid rgba(1, 59, 44, 0.15); border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;}
+        .ipo-card:hover { background-color: rgba(1, 59, 44, 0.03); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .ipo-card-left { display: flex; flex-direction: column; gap: 0.5rem; }
+        .ipo-company { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color:var(--color-primary); line-height: 1.4;}
+        .ipo-details { font-family: var(--font-data); color: #555; }
+        .ipo-status { display: inline-block; background-color: rgba(1, 59, 44, 0.1); color: var(--color-primary); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo"><span class="icon">⬢</span><span>Dubu<span class="light">Finance</span></span></a>
+        <nav class="main-menu" id="dynamic-nav"></nav>
+    </header>
+
+    <main class="ipo-container">
+        <h1 class="ipo-title">Güncel Halka Arz Takvimi (halkarz.com)</h1>
+        <div class="ipo-detailed-list" id="halkaarz-main-list">
+            <p>Yükleniyor...</p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/halkaarz')
+                .then(r => r.json())
+                .then(data => {
+                    const list = document.getElementById('halkaarz-main-list');
+                    list.innerHTML = '';
+                    if(!data || data.length === 0){
+                        list.innerHTML = '<p>Veri sistemden çekilemedi.</p>';
+                        return;
+                    }
+                    data.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'ipo-card';
+                        card.onclick = () => { window.location.href = `/halkaarz/${item.slug}`; };
+                        card.innerHTML = `
+                            <div class="ipo-card-left">
+                                <div class="ipo-company">${item.title}</div>
+                                <div class="ipo-status">Detayları İncele →</div>
+                            </div>
+                        `;
+                        list.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    document.getElementById('halkaarz-main-list').innerHTML = '<p>Hata oluştu.</p>';
+                });
+        });
+    </script>
+</body>
+</html>

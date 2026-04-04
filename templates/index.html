@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dubu Finance - Profesyonel Piyasa Terminali</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* TV Widget Gizleme ve Stillendirme */
+        .tv-chart-wrapper {
+            position: relative;
+            height: 480px;
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        /* Logonun Olduğu Alanı Maskeleme (Alt 35px) */
+        .tv-mask {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 35px;
+            background: #fff;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-gem">◆</span>
+            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+        </a>
+        
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:1.5rem">
+            <div id="user-badge" class="user-badge"></div>
+            <div class="live-status"><span class="pulse"></span> Piyasa Açık</div>
+        </div>
+
+        <nav class="burger-menu" id="burger-menu">
+            <ul>
+                <li><a href="/">Ana Sayfa</a></li>
+                <li><a href="/bist100.html">BİST 100</a></li>
+                <li><a href="/bist30.html">BİST 30</a></li>
+                <li><a href="/madenler.html">Madenler</a></li>
+                <li><a href="/takip">Takip Listem</a></li>
+                <li><a href="/halkaarz.html" style="border-color:#f59e0b; color:#d97706;">Halka Arzlar</a></li>
+                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
+                <li id="burger-auth" style="grid-column: span 2;"></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard">
+        <!-- BİST 100 Canlı Grafik Bölümü -->
+        <section class="hero-chart">
+            <div class="section-header">
+                <h2>BİST 100 Endeksi — Canlı Akış</h2>
+            </div>
+            <div class="tv-chart-wrapper">
+                <!-- TradingView Widget BEGIN -->
+                <div class="tradingview-widget-container" style="height:100%;width:100%">
+                    <div id="tradingview_bist100" style="height:100%;width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                    new TradingView.widget({
+                      "autosize": true,
+                      "symbol": "BIST:XU100",
+                      "interval": "D",
+                      "timezone": "Europe/Istanbul",
+                      "theme": "light",
+                      "style": "3", // Area/Oklu
+                      "locale": "tr",
+                      "toolbar_bg": "#f1f3f6",
+                      "enable_publishing": false,
+                      "hide_legend": true,
+                      "save_image": false,
+                      "container_id": "tradingview_bist100"
+                    });
+                    </script>
+                </div>
+                <div class="tv-mask"></div> <!-- Logo gizleyici -->
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+            <!-- Hisse Tablosu -->
+            <div class="card p-most-active">
+                <div class="section-header">
+                    <h3>Piyasa Özeti</h3>
+                    <a href="/bist100.html">Tümü →</a>
+                </div>
+                <div class="table-scroll">
+                    <table class="market-table" id="market-table-home">
+                        <thead><tr><th></th><th>Hisse Kodu</th><th>Fiyat</th><th>Değişim</th></tr></thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align:center;padding:3rem;color:#999">Hisse verileri yükleniyor...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Neler Oluyor -->
+            <div class="card p-news">
+                <div class="section-header"><h3>Neler Oluyor?</h3></div>
+                <div id="news-feed-container" class="news-feed">
+                    <p style="color:#999;padding:1.5rem 0">Haberler yükleniyor...</p>
+                </div>
+            </div>
+
+            <!-- Halka Arzlar Mini -->
+            <div class="card p-ipo">
+                <div class="section-header"><h3>Halka Arz Takvimi</h3></div>
+                <div class="ipo-list" id="ipo-list">
+                    <p style="color:#999;padding:1rem 0">Yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Haber Modalı -->
+    <div id="news-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close" class="modal-close">&times;</button>
+            <h2 id="modal-title" class="modal-title"></h2>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

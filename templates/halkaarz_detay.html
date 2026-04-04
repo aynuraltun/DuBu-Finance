@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halka Arz Bilgileri - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .ipo-detail-page { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
+        .back-nav { margin-bottom: 2rem; display: block; text-decoration: none; color: var(--color-primary); font-weight: 700; font-size: 0.9rem; }
+        .ipo-hero { background: var(--color-surface); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; border-left: 8px solid #f59e0b; margin-bottom: 2rem; }
+        .ipo-hero h1 { font-family: var(--font-display); font-weight: 900; color: var(--color-primary); font-size: 1.8rem; }
+        
+        .ipo-data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .ipo-stat { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; text-align: center; box-shadow: var(--shadow-sm); }
+        .ipo-stat-label { font-size: 0.8rem; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
+        .ipo-stat-val { font-size: 1.25rem; font-weight: 800; color: var(--color-text); font-family: var(--font-display); }
+        
+        .ipo-description { background: #fff; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-md); line-height: 1.8; color: #444; }
+        .ipo-description h2 { margin-bottom: 1rem; color: var(--color-primary); font-family: var(--font-display); }
+        
+        .fav-ipo-btn { background: none; border: 2px solid #ddd; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; font-family: var(--font-display); font-weight: 700; color: #999; display: flex; align-items: center; gap: 0.6rem; transition: 0.2s; }
+        .fav-ipo-btn.starred { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-gem">◆</span>
+            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+        </a>
+        <div id="user-badge" class="user-badge"></div>
+    </header>
+
+    <main class="ipo-detail-page">
+        <a href="javascript:history.back()" class="back-nav">← Piyasaya Geri Dön</a>
+        
+        <div class="ipo-hero">
+            <div>
+                <h1>{{ ipo.title }}</h1>
+                <p style="color:#d97706; font-weight:700; margin-top:0.4rem;">Talep Toplama: {{ ipo.tarih }}</p>
+            </div>
+            <button id="ipo-fav-btn" data-slug="{{ ipo.title }}" class="fav-ipo-btn" onclick="toggleIpoFavorite('{{ ipo.title }}')">
+                ☆ Favoriye Ekle
+            </button>
+        </div>
+
+        <div class="ipo-data-grid">
+            <div class="ipo-stat"><span class="ipo-stat-label">Halka Arz Fiyatı</span><span class="ipo-stat-val">{{ ipo.fiyat }}</span></div>
+            <div class="ipo-stat"><span class="ipo-stat-label">Dağıtım Yöntemi</span><span class="ipo-stat-val">{{ ipo.yontem }}</span></div>
+            <div class="ipo-stat"><span class="ipo-stat-label">Pay Sayısı (Lot)</span><span class="ipo-stat-val">{{ ipo.lot }}</span></div>
+            <div class="ipo-stat"><span class="ipo-stat-label">Arz Büyüklüğü</span><span class="ipo-stat-val">{{ ipo.buyukluk }}</span></div>
+        </div>
+
+        <div class="ipo-description">
+            <h2>Şirket Hakkında</h2>
+            <p>{{ ipo.description }}</p>
+            <br>
+            <div style="background:#f1f5f9; padding: 1rem; border-radius: 8px; font-size: 0.9rem; color: #1e293b;">
+                <strong>💡 Analist Notu:</strong> {{ ipo.yontem }} dağıtım ile tüm bireysel yatırımcılara eşit hak tanınacaktır. Belirlenen {{ ipo.fiyat }} fiyat seviyesi, sektör ortalamaları ve iskontolu çarpanlar göz önüne alınarak belirlenmiştir.
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+    <script>
+        async function toggleIpoFavorite(slug) {
+            const btn = document.getElementById('ipo-fav-btn');
+            const isFav = btn.classList.contains('starred');
+            const res = await fetch(`/api/favorites/${slug}`, { method: isFav ? 'DELETE' : 'POST' });
+            const data = await res.json();
+            if (data.error) return alert("Halka arzı favorilere eklemek için lütfen giriş yapın.");
+            btn.classList.toggle('starred', !isFav);
+            btn.innerHTML = !isFav ? '★ Takipte' : '☆ Favoriye Ekle';
+        }
+        // Başlangıçta favori durumunu çek
+        async function initIpoFav() {
+            const res = await fetch('/api/favorites');
+            const data = await res.json();
+            if (data.favorites && data.favorites.includes('{{ ipo.title }}')) {
+                const btn = document.getElementById('ipo-fav-btn');
+                btn.classList.add('starred');
+                btn.innerHTML = '★ Takipte';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', initIpoFav);
+    </script>
+</body>
+</html>

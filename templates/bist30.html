@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BİST 30 Lokomotif Hisseler - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Open Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .full-page-widget {
+            margin: 2rem;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="icon">⬢</span> 
+            <span>Dubu<span class="light">Finans</span></span>
+        </a>
+        <nav class="main-menu" id="dynamic-nav"></nav>
+    </header>
+
+    <main class="full-page-widget">
+        <div class="section-header">
+            <h2>BİST 30 Lokomotif Şirketleri</h2>
+            <p style="color:#666">Hacim liderleri. Hisselerin üzerine tıklayarak detaylı özel sayfayı açabilirsiniz.</p>
+        </div>
+        
+        <div class="table-container">
+            <table class="market-table" id="market-table-30">
+                <thead>
+                    <tr>
+                        <th>Sembol</th>
+                        <th>Son Fiyat</th>
+                        <th>Değişim (%)</th>
+                        <th>Hacim</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="4" style="text-align:center">Veriler Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script src="/static/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMarketTable('market-table-30', 30);
+        });
+    </script>
+</body>
+</html>

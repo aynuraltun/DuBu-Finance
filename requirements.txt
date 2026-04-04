@@ -1,0 +1,6 @@
+Flask
+feedparser
+requests
+yfinance
+bs4
+cachetools
