@@ -34,3 +34,15 @@ def update_templates():
             file.write(content)
 
 update_templates()
+
+
+# Eğer değişken adın farklıysa (örneğin 'dubu'), onu app'e eşitle:
+app = dubu  # 'dubu' yerine kendi Antigravity değişken ismini yaz.
+# ... diğer kodların ...
+
+# Vercel'in görmesi gereken ana nesne
+app = uygulama_degiskenin_adin 
+
+if __name__ == "__main__":
+    # Bu kısım sadece senin bilgisayarında çalışırken devreye girer
+    app.run()
