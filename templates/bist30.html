@@ -3,55 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BİST 30 Lokomotif Hisseler - Dubu Finance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Open Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>BİST 30 - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        .full-page-widget {
-            margin: 2rem;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            padding: 2rem;
-        }
+        .page-wrap { max-width: 1200px; margin: 3rem auto; padding: 0 2rem; }
     </style>
 </head>
 <body>
     <header class="top-nav">
         <a href="/" class="logo">
-            <span class="icon">⬢</span> 
-            <span>Dubu<span class="light">Finans</span></span>
+            <span class="logo-gem">◆</span>
+            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
         </a>
-        <nav class="main-menu" id="dynamic-nav"></nav>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+        <nav class="burger-menu" id="burger-menu">
+            <ul>
+                <li><a href="/">Ana Sayfa</a></li>
+                <li><a href="/bist100.html">BİST 100</a></li>
+                <li><a href="/bist30.html" style="border-color:var(--color-primary); color:var(--color-primary)">BİST 30</a></li>
+                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
+                <li><a href="/takip">Takip Listem</a></li>
+                <li><a href="/halkaarz.html" style="border-color:#f59e0b; color:#d97706;">Halka Arzlar</a></li>
+                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
+               <li id="burger-auth" style="grid-column: span 2;"></li>
+            </ul>
+        </nav>
     </header>
 
-    <main class="full-page-widget">
+    <div class="page-wrap">
         <div class="section-header">
-            <h2>BİST 30 Lokomotif Şirketleri</h2>
-            <p style="color:#666">Hacim liderleri. Hisselerin üzerine tıklayarak detaylı özel sayfayı açabilirsiniz.</p>
+            <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">BİST 30 Lokomotif Hisseler</h1>
+            <p style="color:var(--color-muted);">Piyasanın en hacimli 30 şirketi. Detaylar için hisselere tıklayın.</p>
         </div>
         
-        <div class="table-container">
-            <table class="market-table" id="market-table-30">
+        <div class="card" style="padding:0; overflow:hidden;">
+            <table class="market-table" id="bist30-table">
                 <thead>
                     <tr>
+                        <th style="width:50px"></th>
                         <th>Sembol</th>
-                        <th>Son Fiyat</th>
-                        <th>Değişim (%)</th>
-                        <th>Hacim</th>
+                        <th style="text-align:right">Son Fiyat</th>
+                        <th style="text-align:right">Değişim (%)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td colspan="4" style="text-align:center">Veriler Yükleniyor...</td></tr>
+                    <tr><td colspan="4" style="text-align:center; padding: 2rem;">Veriler çekiliyor...</td></tr>
                 </tbody>
             </table>
         </div>
-    </main>
+    </div>
+
     <script src="/static/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            loadMarketTable('market-table-30', 30);
+            initUI();
+            fetch('/api/screener').then(r => r.json()).then(res => {
+                const tbody = document.querySelector('#bist30-table tbody');
+                tbody.innerHTML = '';
+                if (!res.data || !res.data.length) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Veri bulunamadı.</td></tr>';
+                    return;
+                }
+                res.data.forEach(row => {
+                    const sym = row.s.split(':')[1];
+                    const price = row.d[1].toFixed(2);
+                    const change = row.d[2].toFixed(2);
+                    const cls = change > 0 ? 'val-up' : (change < 0 ? 'val-down' : '');
+                    const sign = change > 0 ? '+' : '';
+                    const isFav = typeof userFavorites !== 'undefined' && userFavorites.has(sym);
+                    const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
+                    tr.onclick = (e) => { if(e.target.tagName !== 'BUTTON') window.location.href=`/hisse/${sym}`; };
+                    tr.innerHTML = `
+                        <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
+                        <td class="sym-name">${sym}</td>
+                        <td style="text-align:right">${price} ₺</td>
+                        <td class="${cls}" style="text-align:right">${sign}${change}%</td>`;
+                    tbody.appendChild(tr);
+                });
+            });
         });
     </script>
 </body>

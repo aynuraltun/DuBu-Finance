@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Takip Ettiklerim | Dubu Finance</title>
+    <title>Takip Listem - Dubu Finance</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        .watchlist-wrap { max-width: 900px; margin: 2.5rem auto; padding: 0 2rem; }
-        .watchlist-card { background: var(--color-surface); border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-md); }
-        .watchlist-title { font-family: var(--font-display); font-size: 1.75rem; font-weight: 900; color: var(--color-primary); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid rgba(1,59,44,0.1); }
-        .watchlist-empty { text-align: center; padding: 3rem 1rem; color: var(--color-muted); }
-        .watchlist-empty h2 { font-family: var(--font-display); color: var(--color-text); margin-bottom: 0.75rem; }
-        .detail-btn { background: var(--color-primary); color: #fff; border: none; padding: 0.35rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: var(--font-display); }
-        .detail-btn:hover { opacity: 0.85; }
+        .page-wrap { max-width: 1000px; margin: 3rem auto; padding: 0 2rem; }
+        .fav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .fav-card {
+            background: #fff; padding: 1.5rem; border-radius: 12px;
+            box-shadow: var(--shadow-sm); border: 1px solid #eee;
+            transition: 0.2s; cursor: pointer; position: relative;
+        }
+        .fav-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: #f59e0b; }
+        .fav-symbol { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--color-primary); }
+        .fav-price { font-family: var(--font-data); font-size: 1.2rem; font-weight: 700; color: var(--color-text); margin-top: 0.5rem; }
+        .empty-state { text-align: center; padding: 4rem 1rem; background: #fff; border-radius: 16px; border: 2px dashed #e2e8f0; }
+        .remove-btn { position: absolute; top: 1rem; right: 1rem; color: #dc2626; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -22,19 +27,79 @@
             <span class="logo-gem">◆</span>
             <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
         </a>
-        <nav class="main-menu" id="dynamic-nav"></nav>
-        <div class="live-status"><span class="pulse"></span> Piyasa Açık</div>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+        <nav class="burger-menu" id="burger-menu">
+            <ul>
+                <li><a href="/">Ana Sayfa</a></li>
+                <li><a href="/bist100.html">BİST 100</a></li>
+                <li><a href="/bist30.html">BİST 30</a></li>
+                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
+                <li><a href="/takip">Takip Listem</a></li>
+                <li><a href="/halkaarz.html" style="border-color:#f59e0b; color:#d97706;">Halka Arzlar</a></li>
+                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
+               <li id="burger-auth" style="grid-column: span 2;"></li>
+            </ul>
+        </nav>
     </header>
 
-    <main class="watchlist-wrap">
-        <div class="watchlist-card">
-            <div class="watchlist-title">⭐ Takip Ettiklerim</div>
-            <div id="watchlist-container">
-                <p style="color:#999; text-align:center; padding:2rem">Yükleniyor...</p>
-            </div>
+    <div class="page-wrap">
+        <div class="section-header">
+            <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">⭐ Favoriler</h1>
         </div>
-    </main>
+        
+        <div id="fav-container" class="fav-grid">
+            <div style="grid-column: 1/-1; text-align:center; padding: 3rem;">Yükleniyor...</div>
+        </div>
+    </div>
 
     <script src="/static/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            fetch('/api/favorites_data')
+                .then(r => r.json())
+                .then(data => {
+                    const cont = document.getElementById('fav-container');
+                    if (data.error || data.length === 0) {
+                        cont.innerHTML = `
+                            <div class="empty-state">
+                                <h3 style="color:#64748b; margin-bottom:1rem;">Henüz hiçbir şeyi favorilemediniz.</h3>
+                                <p style="color:#94a3b8;">BİST 100, madenler veya halka arzlar sayfasından yıldız ikonuna tıklayarak ilk favorinizi ekleyin.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    cont.innerHTML = '';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'fav-card';
+                        div.onclick = (e) => { 
+                            if(e.target.className !== 'remove-btn') window.location.href = `/hisse/${item.symbol}`;
+                        };
+                        div.innerHTML = `
+                            <button class="remove-btn" title="Favorilerden Çıkar" onclick="removeFav('${item.symbol}', event)">✖</button>
+                            <div class="fav-symbol">${item.symbol}</div>
+                            <div class="fav-price">${item.price} <span style="color:var(--color-up); font-size:0.9rem;">${item.change}</span></div>
+                        `;
+                        cont.appendChild(div);
+                    });
+                })
+                .catch(() => {
+                    document.getElementById('fav-container').innerHTML = '<div style="text-align:center">Önce giriş yapmalısınız.</div>';
+                });
+        });
+        
+        async function removeFav(sym, e) {
+            e.stopPropagation();
+            await fetch(`/api/favorites/${sym}`, { method: 'DELETE' });
+            window.location.reload();
+        }
+    </script>
 </body>
 </html>

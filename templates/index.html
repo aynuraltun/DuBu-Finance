@@ -48,14 +48,13 @@
 
         <nav class="burger-menu" id="burger-menu">
             <ul>
-                <li><a href="/">Ana Sayfa</a></li>
+                <li class="span-2"><a href="/">Ana Sayfa</a></li>
                 <li><a href="/bist100.html">BİST 100</a></li>
-                <li><a href="/bist30.html">BİST 30</a></li>
-                <li><a href="/madenler.html">Madenler</a></li>
+                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
                 <li><a href="/takip">Takip Listem</a></li>
-                <li><a href="/halkaarz.html" style="border-color:#f59e0b; color:#d97706;">Halka Arzlar</a></li>
+                <li><a href="/halkaarz.html">Halka Arzlar</a></li>
                 <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
-                <li id="burger-auth" style="grid-column: span 2;"></li>
+               <li id="burger-auth" style="grid-column: span 2;"></li>
             </ul>
         </nav>
     </header>
@@ -66,7 +65,8 @@
             <div class="section-header">
                 <h2>BİST 100 Endeksi — Canlı Akış</h2>
             </div>
-            <div class="tv-chart-wrapper">
+            <div class="tv-chart-wrapper" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
+                <div class="scroll-protector"></div>
                 <!-- TradingView Widget BEGIN -->
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                     <div id="tradingview_bist100" style="height:100%;width:100%"></div>
@@ -82,7 +82,7 @@
                       "locale": "tr",
                       "toolbar_bg": "#f1f3f6",
                       "enable_publishing": false,
-                      "hide_legend": true,
+                      "hide_legend": false,
                       "save_image": false,
                       "container_id": "tradingview_bist100"
                     });

@@ -3,28 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ sembol }} Hisse Analizi - Dubu Finance</title>
+    <title>{{ data.symbol }} - Dubu Finance</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        .stock-page { max-width: 1300px; margin: 2rem auto; padding: 0 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-        .stock-header { background: var(--color-surface); border-radius: 12px; padding: 1.5rem 2rem; box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--color-primary); }
-        .stock-symbol { font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; color: var(--color-primary); }
-        .stock-body { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; }
-        .tv-wrap { position: relative; height: 500px; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: var(--shadow-md); }
-        .tv-mask { position: absolute; bottom: 0; left: 0; right: 0; height: 35px; background: #fff; z-index: 10; }
-        
-        .info-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
-        .info-card { background: var(--color-surface); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); }
-        .info-card-title { font-family: var(--font-display); font-weight: 700; color: var(--color-primary); border-bottom: 1px solid #eee; padding-bottom: 0.6rem; margin-bottom: 0.8rem; font-size: 1rem; }
-        .info-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem; }
-        .info-label { color: var(--color-muted); }
-        .info-val { font-family: var(--font-data); font-weight: 600; color: var(--color-text); }
-        .company-desc { font-size: 0.88rem; line-height: 1.8; color: #555; }
-        
-        .fav-toggle-btn { background: none; border: 2px solid #ddd; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-family: var(--font-display); font-weight: 700; color: #999; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
-        .fav-toggle-btn:hover { border-color: #f59e0b; color: #f59e0b; }
-        .fav-toggle-btn.active { border-color: #f59e0b; background: #fffbeb; color: #d97706; }
+        .page-wrap { max-width: 1200px; margin: 3rem auto; padding: 0 2rem; }
+        .hero { display: flex; justify-content: space-between; align-items: center; background: var(--color-surface); padding: 2rem; border-radius: 16px; box-shadow: var(--shadow-md); margin-bottom: 2rem; }
+        .hero-left h1 { font-family: var(--font-display); font-size: 2.5rem; color: var(--color-primary); font-weight: 900; }
+        .hero-right { text-align: right; }
+        .hero-price { font-size: 2.5rem; font-family: var(--font-data); font-weight: 800; color: var(--color-text); }
+        .hero-change { font-size: 1.2rem; font-weight: 700; color: var(--color-up); }
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .tech-card { background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid #eee; text-align: center; }
+        .tech-lbl { display: block; font-size: 0.8rem; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .tech-val { font-size: 1.2rem; font-weight: 800; color: var(--color-text); font-family: var(--font-data); }
+        .desc-card { background: #fff; padding: 2rem; border-radius: 16px; box-shadow: var(--shadow-md); line-height: 1.8; color: #444; border-left: 5px solid var(--color-primary); }
     </style>
 </head>
 <body>
@@ -41,123 +34,75 @@
         <div id="user-badge" class="user-badge"></div>
         <nav class="burger-menu" id="burger-menu">
             <ul>
-                <li><a href="/">Ana Sayfa</a></li>
+                <li class="span-2"><a href="/">Ana Sayfa</a></li>
                 <li><a href="/bist100.html">BİST 100</a></li>
-                <li><a href="/bist30.html">BİST 30</a></li>
-                <li><a href="/altin.html">Altın</a></li>
-                <li><a href="/takip">⭐ Takip Ettiklerim</a></li>
-                <li class="burger-divider"></li>
-                <li id="burger-auth"></li>
+                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
+                <li><a href="/takip">Takip Listem</a></li>
+                <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
+               <li id="burger-auth" style="grid-column: span 2;"></li>
             </ul>
         </nav>
     </header>
 
-    <main class="stock-page">
-        <div class="stock-header">
-            <div class="stock-symbol">{{ sembol }} <span style="font-size:1rem;color:#888;font-weight:400">| BİST</span></div>
-            <div style="display:flex; gap:1rem; align-items:center;">
-                <button id="detail-fav-btn" data-symbol="{{ sembol }}" class="fav-toggle-btn" onclick="handleDetailFav()">
-                    ☆ Takip Listesine Ekle
-                </button>
-                <a href="javascript:history.back()" class="back-link" style="text-decoration:none; color:var(--color-primary); font-weight:700">← GRİ DÖN</a>
+    <div class="page-wrap">
+        <a href="javascript:history.back()" style="display:inline-block; margin-bottom: 1.5rem; color:var(--color-primary); font-weight:700; text-decoration:none;">← Geri Dön</a>
+        
+        <div class="hero">
+            <div class="hero-left">
+                <h1>{{ data.symbol }}</h1>
+                <div style="margin-top: 1rem;">
+                    <button class="star-btn" style="color: #999; border: 2px solid #ddd; background: #fff; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem;" data-symbol="{{ data.symbol }}" onclick="toggleFavorite('{{ data.symbol }}', this)">
+                        ☆ Favoriye Ekle
+                    </button>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-price">{{ data.price }}</div>
+                <div class="hero-change">{{ data.change }}</div>
             </div>
         </div>
 
-        <div class="stock-body">
-            <!-- TV Widget ile Oklu Grafik -->
-            <div class="tv-wrap">
-                <div id="tv_stock_chart" style="height:100%;width:100%"></div>
+        <div class="tech-grid">
+            <div class="tech-card"><span class="tech-lbl">Açılış</span><span class="tech-val">{{ data.open }}</span></div>
+            <div class="tech-card"><span class="tech-lbl">En Yüksek</span><span class="tech-val">{{ data.high }}</span></div>
+            <div class="tech-card"><span class="tech-lbl">En Düşük</span><span class="tech-val">{{ data.low }}</span></div>
+            <div class="tech-card"><span class="tech-lbl">Hacim</span><span class="tech-val">{{ data.volume }}</span></div>
+            <div class="tech-card"><span class="tech-lbl">Piyasa Değeri</span><span class="tech-val">{{ data.market_cap }}</span></div>
+        </div>
+
+        <div class="tv-chart-wrapper" style="height: 500px; margin-bottom: 2rem;" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
+            <div class="scroll-protector"></div>
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+                <div id="tv_chart" style="height:100%; width:100%;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
-                  new TradingView.widget({
-                    "autosize": true,
-                    "symbol": "BIST:{{ sembol }}",
-                    "interval": "D",
-                    "timezone": "Europe/Istanbul",
-                    "theme": "light",
-                    "style": "3", // Area/Oklu
-                    "locale": "tr",
-                    "toolbar_bg": "#f1f3f6",
-                    "enable_publishing": false,
-                    "hide_legend": true,
-                    "save_image": false,
-                    "container_id": "tv_stock_chart"
-                  });
+                    new TradingView.widget({
+                        "autosize": true,
+                        "symbol": "BIST:{{ data.symbol }}",
+                        "interval": "D",
+                        "timezone": "Europe/Istanbul",
+                        "theme": "light",
+                        "style": "1",
+                        "locale": "tr",
+                        "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false,
+                        "hide_legend": false,
+                        "save_image": false,
+                        "container_id": "tv_chart"
+                    });
                 </script>
-                <div class="tv-mask"></div>
             </div>
-
-            <div class="info-sidebar">
-                <div class="info-card">
-                    <div class="info-card-title">Anlık Teknik Veriler</div>
-                    <div class="info-row"><span class="info-label">Açılış</span><span class="info-val" id="val-open">Yükleniyor...</span></div>
-                    <div class="info-row"><span class="info-label">En Yüksek</span><span class="info-val" id="val-high">Yükleniyor...</span></div>
-                    <div class="info-row"><span class="info-label">En Düşük</span><span class="info-val" id="val-low">Yükleniyor...</span></div>
-                    <div class="info-row"><span class="info-label">Önceki Kapanış</span><span class="info-val" id="val-prev">Yükleniyor...</span></div>
-                    <div class="info-row"><span class="info-label">Hacim</span><span class="info-val" id="val-vol">Yükleniyor...</span></div>
-                    <div class="info-row"><span class="info-label">52 Hafta Aralığı</span><span class="info-val" id="val-52w" style="font-size:0.75rem">...</span></div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-card-title">Şirket Profili</div>
-                    <div class="company-desc">
-                        {{ sembol }} kodlu şirket, Borsa İstanbul (BİST) bünyesinde işlem görmektedir. Kurumsal performans verileri ve KAP bildirimleri temel alınarak analiz edilmiştir. Detaylı bilanço ve finansal takvim için Dubu Finance teknik analiz araçlarını kullanabilirsiniz.
-                    </div>
-                </div>
-            </div>
+            <div class="tv-mask"></div>
+            <div class="tv-mask-top"></div>
         </div>
-    </main>
+
+        <div class="desc-card">
+            <h2 style="color:var(--color-primary); font-family:var(--font-display); margin-bottom: 1rem;">Şirket Hakkında</h2>
+            <p>{{ data.desc }}</p>
+        </div>
+    </div>
 
     <script src="/static/script.js"></script>
-    <script>
-        // Sayfa özelinde favori kontrolü
-        function checkInitFav() {
-            fetch('/api/favorites').then(r => r.json()).then(d => {
-                if (d.favorites && d.favorites.includes('{{ sembol }}')) {
-                    const btn = document.getElementById('detail-fav-btn');
-                    btn.classList.add('active');
-                    btn.innerHTML = '★ Takip Listesinde';
-                }
-            });
-        }
-        function handleDetailFav() {
-            const sym = '{{ sembol }}';
-            const btn = document.getElementById('detail-fav-btn');
-            const isActive = btn.classList.contains('active');
-            fetch(`/api/favorites/${sym}`, { method: isActive ? 'DELETE' : 'POST' })
-                .then(r => r.json())
-                .then(d => {
-                    if (d.error) return alert("Giriş yapmalısınız!");
-                    if (isActive) {
-                        btn.classList.remove('active');
-                        btn.innerHTML = '☆ Takip Listesine Ekle';
-                    } else {
-                        btn.classList.add('active');
-                        btn.innerHTML = '★ Takip Listesinde';
-                    }
-                });
-        }
-        function loadStockDetails() {
-            const sym = '{{ sembol }}';
-            fetch(`/api/stock_info/${sym}`)
-                .then(r => r.json())
-                .then(d => {
-                    if (d.error) return (document.getElementById('val-open').textContent = '—');
-                    document.getElementById('val-open').textContent = d.open + ' ₺';
-                    document.getElementById('val-high').textContent = d.high + ' ₺';
-                    document.getElementById('val-low').textContent = d.low + ' ₺';
-                    document.getElementById('val-prev').textContent = d.prevClose + ' ₺';
-                    document.getElementById('val-52w').textContent = `${d.yearLow} - ${d.yearHigh} ₺`;
-                    
-                    let v = d.volume;
-                    let vStr = v > 1e6 ? (v/1e6).toFixed(1) + ' Mn' : (v > 1e3 ? (v/1e3).toFixed(1) + ' K' : v);
-                    document.getElementById('val-vol').textContent = vStr;
-                });
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            checkInitFav();
-            loadStockDetails();
-        });
-    </script>
 </body>
 </html>

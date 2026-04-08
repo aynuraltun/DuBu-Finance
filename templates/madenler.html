@@ -7,12 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        .metals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .metal-card { background: var(--color-surface); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary); }
-        .metal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .metal-name { font-weight: 700; font-size: 1.1rem; color: var(--color-primary); }
-        .metal-price { font-size: 1.8rem; font-weight: 800; color: var(--color-text); font-family: var(--font-data); }
-        .metal-change { font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem; }
+        .madenler-layout { display: grid; gap: 2rem; margin-top: 1rem; }
+        @media(min-width: 900px) { .madenler-layout { grid-template-columns: 1fr 400px; } }
+        
+        .metals-list { display: flex; flex-direction: column; gap: 1rem; }
+        .metal-card { background: var(--color-surface); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); border-left: 5px solid var(--color-primary); display: flex; justify-content: space-between; align-items: center;}
+        .gold-card { border-left-color: #f59e0b; background: #fffbeeb3; }
+        
+        .metal-header { display: flex; flex-direction: column; }
+        .metal-name { font-weight: 800; font-size: 1.2rem; color: var(--color-primary); }
+        .metal-symbol { font-size: 0.8rem; color: var(--color-muted); font-weight: 700; }
+        
+        .metal-stats { text-align: right; }
+        .metal-price { font-size: 1.6rem; font-weight: 800; color: var(--color-text); font-family: var(--font-data); }
+        
+        .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
+        .tv-wrap-sm { height: 350px; position: relative; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: var(--shadow-sm); }
+        
+        .news-sidebar { background: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-md); max-height: calc(100vh - 100px); overflow-y: auto;}
     </style>
 </head>
 <body>
@@ -29,60 +41,135 @@
         <div id="user-badge" class="user-badge"></div>
         <nav class="burger-menu" id="burger-menu">
             <ul>
-                <li><a href="/">Ana Sayfa</a></li>
+                <li class="span-2"><a href="/">Ana Sayfa</a></li>
                 <li><a href="/bist100.html">BİST 100</a></li>
-                <li><a href="/bist30.html">BİST 30</a></li>
-                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
-                <li><a href="/takip">⭐ Takip Ettiklerim</a></li>
-                <li class="burger-divider"></li>
-                <li id="burger-auth"></li>
+                <li><a href="/madenler.html" style="border-color:var(--color-primary); color:var(--color-primary)">Kıymetli Madenler</a></li>
+                <li><a href="/takip">Takip Listem</a></li>
+                <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
+               <li id="burger-auth" style="grid-column: span 2;"></li>
             </ul>
         </nav>
     </header>
 
-    <main style="max-width:1200px; margin: 3rem auto; padding: 0 2rem;">
-        <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">Kıymetli Maden Terminali</h1>
-        <p style="color:var(--color-muted); margin-top:0.5rem;">Canlı Altın, Gümüş, Platin ve Paladyum ons fiyatları.</p>
-        
-        <div class="metals-grid" id="metals-grid">
-            <p>Veriler yükleniyor...</p>
+    <main class="dashboard">
+        <div class="section-header">
+            <h2>Kıymetli Madenler Piyasası</h2>
+            <p style="color:var(--color-muted); font-weight:600;">Canlı Fiyatlar ve Maden Haberleri</p>
         </div>
+        
+        <div class="madenler-layout">
+            <!-- Sol Taraf: Endeksler ve Grafikler -->
+            <div class="left-col">
+                <div class="metals-list" id="metals-grid">
+                    <div class="metal-card gold-card">
+                        <div class="metal-header"><span class="metal-name">Altın (XAU)</span> <span class="metal-symbol">Ons/$</span></div>
+                        <div class="metal-stats"><div class="metal-price" id="price-gold">...</div></div>
+                    </div>
+                    <div class="metal-card">
+                        <div class="metal-header"><span class="metal-name">Gram Altın</span> <span class="metal-symbol">₺</span></div>
+                        <div class="metal-stats"><div class="metal-price" id="price-gram">...</div></div>
+                    </div>
+                    <div class="metal-card">
+                        <div class="metal-header"><span class="metal-name">Çeyrek Altın</span> <span class="metal-symbol">₺</span></div>
+                        <div class="metal-stats"><div class="metal-price" id="price-ceyrek">...</div></div>
+                    </div>
+                    <div class="metal-card">
+                        <div class="metal-header"><span class="metal-name">Gümüş (XAG)</span> <span class="metal-symbol">Ons/$</span></div>
+                        <div class="metal-stats"><div class="metal-price" id="price-silver">...</div></div>
+                    </div>
+                    <div class="metal-card">
+                        <div class="metal-header"><span class="metal-name">Platin & Paladyum</span> <span class="metal-symbol">Ons/$</span></div>
+                        <div class="metal-stats"><div class="metal-price" id="price-platinum">...</div></div>
+                    </div>
+                </div>
 
-        <div style="margin-top:4rem; height:500px; position:relative; overflow:hidden; border-radius:12px;">
-            <h2 style="margin-bottom:1.5rem; color:var(--color-text);">Ons Altın Teknik Grafik</h2>
-            <div id="tv-gold" style="height:440px;"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-            <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true,
-                  "symbol": "TVC:GOLD",
-                  "interval": "D",
-                  "theme": "light",
-                  "style": "3",
-                  "locale": "tr",
-                  "container_id": "tv-gold"
-                });
-            </script>
+                <div class="charts-grid">
+                    <div class="tv-wrap-sm" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
+                        <div class="scroll-protector"></div>
+                        <div id="tv-gold" style="height:100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Haberler -->
+            <div class="news-sidebar">
+                <div class="section-header" style="margin-bottom:1rem;">
+                    <h3>Sektör Haberleri</h3>
+                </div>
+                <div class="news-feed" id="metals-news-container">
+                    <p style="color:var(--color-muted);">Haberler yükleniyor...</p>
+                </div>
+            </div>
         </div>
     </main>
 
+    <!-- HABER MODALI -->
+    <div class="modal-overlay" id="news-modal" onclick="closeNewsModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeNewsModal(event)">&times;</button>
+            <h2 id="modal-title" style="font-family:var(--font-display); color:var(--color-primary); margin-bottom: 1rem; font-size:1.8rem;">Haber Başlığı</h2>
+            <div style="color: #666; font-size:0.9rem; margin-bottom:1.5rem;" id="modal-date"></div>
+            <div id="modal-body" style="line-height:2; font-size:1.05rem; color:#333;"></div>
+            <div style="margin-top:2rem; text-align:center;">
+                <a id="modal-link" href="#" target="_blank" style="display:inline-block; padding:1rem 2rem; background:var(--color-primary); color:#fff; text-decoration:none; border-radius:8px; font-weight:700;">Haberin Tamamını Oku</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://s3.tradingview.com/tv.js"></script>
     <script src="/static/script.js"></script>
     <script>
+        function closeNewsModal(e) {
+            if(e) e.preventDefault();
+            document.getElementById('news-modal').classList.remove('active');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('/api/metals').then(r => r.json()).then(data => {
-                const grid = document.getElementById('metals-grid');
-                grid.innerHTML = '';
-                data.forEach(m => {
-                    const cls = m.change > 0 ? 'val-up' : (m.change < 0 ? 'val-down' : '');
-                    const sign = m.change > 0 ? '+' : '';
-                    grid.innerHTML += `
-                        <div class="metal-card">
-                            <div class="metal-header"><span class="metal-name">${m.name}</span></div>
-                            <div class="metal-price">${m.price.toLocaleString('tr-TR')} $</div>
-                            <div class="metal-change ${cls}">${sign}${m.change}%</div>
-                        </div>`;
+            initUI();
+            
+            // Altın Grafiği
+            new TradingView.widget({"autosize":true,"symbol":"TVC:GOLD","interval":"D","theme":"light","style":"3","locale":"tr","container_id":"tv-gold","hide_legend":true,"save_image":false});
+            
+            // Fiyatları çek
+            fetch('/api/metals')
+                .then(r => r.json())
+                .then(data => {
+                    data.forEach(m => {
+                        const el = document.getElementById('price-' + m.symbol.toLowerCase());
+                        if (el) {
+                            const val = m.price.toLocaleString('tr-TR');
+                            const prefix = m.symbol === 'GRAM' || m.symbol === 'CEYREK' ? '₺' : '$';
+                            el.innerHTML = `${val} ${prefix} <div style="font-size:0.9rem;color:${m.change>0?'#059669':'#dc2626'}">${m.change>0?'+':''}${m.change}%</div>`;
+                        } else if (m.symbol === 'PLATINUM') {
+                            document.getElementById('price-platinum').innerHTML = `${m.price} $ <div style="font-size:0.9rem;color:#666">Paladyum dahil</div>`;
+                        }
+                    });
+                }).catch(e => console.log('Fiyatlar yüklenmedi.'));
+                
+            // Haberleri çek
+            fetch('/api/news')
+                .then(r => r.json())
+                .then(news => {
+                    const c = document.getElementById('metals-news-container');
+                    c.innerHTML = '';
+                    const metalsNews = news.filter(n => n.title.toLowerCase().includes('altın') || n.title.toLowerCase().includes('gümüş') || n.title.toLowerCase().includes('fed') || n.title.toLowerCase().includes('dolar') || n.title.toLowerCase().includes('faiz'));
+                    
+                    const toShow = metalsNews.length > 0 ? metalsNews : news.slice(0,5);
+                    toShow.forEach(n => {
+                        const div = document.createElement('div');
+                        div.className = 'news-item';
+                        div.innerHTML = `<div class="news-title">${n.title}</div><div class="news-preview">${n.description}...</div><div class="news-date">${n.published}</div>`;
+                        div.onclick = () => {
+                            document.getElementById('modal-title').textContent = n.title;
+                            document.getElementById('modal-date').textContent = n.published;
+                            document.getElementById('modal-body').textContent = n.description + " Haberin daha uzun ve detaylı hali için lütfen kaynağı ziyaret ediniz.";
+                            document.getElementById('modal-link').href = n.link;
+                            document.getElementById('news-modal').classList.add('active');
+                        };
+                        c.appendChild(div);
+                    });
                 });
-            });
         });
     </script>
 </body>

@@ -24,12 +24,26 @@ function updateAllStars() {
     });
 }
 
+/* ---------- Custom Toast Bildirimi ---------- */
+function showToast(msg) {
+    let t = document.getElementById('custom-toast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = 'custom-toast';
+        t.className = 'toast-msg';
+        document.body.appendChild(t);
+    }
+    t.innerHTML = '⚠️ ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
 async function toggleFavorite(symbol, btn) {
     const isFav = userFavorites.has(symbol);
     try {
         const res = await fetch(`/api/favorites/${symbol}`, { method: isFav ? 'DELETE' : 'POST' });
         const data = await res.json();
-        if (data.error) return alert('Lütfen önce giriş yapın.');
+        if (data.error) return showToast('Lütfen favorilere eklemek için giriş yapın.');
         if (isFav) userFavorites.delete(symbol);
         else userFavorites.add(symbol);
         updateAllStars();
@@ -57,7 +71,20 @@ function initUI() {
     fetch('/api/user').then(r => r.json()).then(u => {
         const badge = document.getElementById('user-badge');
         const auth = document.getElementById('burger-auth');
-        if (badge) badge.innerHTML = u.user ? `👤 ${u.user}` : '<a href="/login" style="color:var(--color-primary);font-weight:700">Giriş Yap</a>';
+        if (badge) {
+            if (u.user) {
+                badge.innerHTML = `
+                    <div class="user-menu-wrap">
+                        <span style="font-weight:800; font-family:var(--font-display);">👤 ${u.user} ▾</span>
+                        <div class="user-menu-dropdown">
+                            <a href="/takip">⭐ Favorilerim</a>
+                            <a href="/logout">🚪 Çıkış Yap</a>
+                        </div>
+                    </div>`;
+            } else {
+                badge.innerHTML = '<a href="/login" style="color:var(--color-primary);font-weight:700">Giriş Yap</a>';
+            }
+        }
         if (auth) auth.innerHTML = u.user ? `<a href="/logout">Çıkış Yap (${u.user})</a>` : '<a href="/login">Giriş Yap</a> / <a href="/register">Kaydol</a>';
     });
 }
@@ -128,9 +155,21 @@ function initNews() {
             div.className = 'news-item';
             div.innerHTML = `<div class="news-title">${n.title}</div><div class="news-preview">${n.description}...</div><div class="news-date">${n.published}</div>`;
             div.addEventListener('click', () => {
-                document.getElementById('modal-title').textContent = n.title;
-                document.getElementById('modal-body').innerHTML = `<p style="line-height:1.8">${n.description}</p><br><a href="${n.link}" target="_blank" style="color:var(--color-primary);font-weight:700">Daha Fazla Oku...</a>`;
-                modal.classList.add('active');
+                const titleEl = document.getElementById('modal-title');
+                if (titleEl) titleEl.textContent = n.title;
+                const dateEl = document.getElementById('modal-date');
+                if (dateEl) dateEl.textContent = n.published;
+                const bodyEl = document.getElementById('modal-body');
+                if (bodyEl) {
+                    bodyEl.innerHTML = `${n.description} Detaylı analiz ve tam metin için haberi kaynağından görüntüleyebilirsiniz.`;
+                }
+                const linkEl = document.getElementById('modal-link');
+                if (linkEl) {
+                    linkEl.href = n.link;
+                } else if (bodyEl) {
+                    bodyEl.innerHTML += `<div style="margin-top:2rem;text-align:center;"><a href="${n.link}" target="_blank" style="display:inline-block; padding:1rem 2rem; background:var(--color-primary); color:#fff; text-decoration:none; border-radius:8px; font-weight:700;">Haberin Tamamını Oku</a></div>`;
+                }
+                if (modal) modal.classList.add('active');
             });
             newsContainer.appendChild(div);
         });
