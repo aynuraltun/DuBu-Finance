@@ -1,198 +1,138 @@
 /* =========================================
-   DUBU FINANCE — Logic (Sabit Veri & Vercel Uyumlu)
+   DUBU FINANCE — Canlı BIST 100 Entegrasyonu
    ========================================= */
 
-let userFavorites = new Set();
 let chartInstances = {};
 
-/* ---------- Başlatıcı (DOM Hazır Olduğunda) ---------- */
+/* ---------- Başlatıcı ---------- */
 document.addEventListener('DOMContentLoaded', () => {
     initUI();
-    loadMarketTable();
+    loadMarketTable(); // BIST 100 listesini yükle
     loadIpoWidget();
     initNews();
     
-    // Ana sayfadaki BIST100 grafiğini başlat
     if (document.getElementById('bistChart')) {
-        loadNativeChart('XU100', '6mo', 'bistChart');
+        loadNativeChart('XU100', '1d', 'bistChart');
     }
 });
 
-/* ---------- Menü ve Kullanıcı Arayüzü ---------- */
+/* ---------- Menü ve UI ---------- */
 function initUI() {
     const burgerBtn = document.getElementById('burger-btn');
     const burgerMenu = document.getElementById('burger-menu');
-    
     if (burgerBtn && burgerMenu) {
         burgerBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             burgerBtn.classList.toggle('open');
             burgerMenu.classList.toggle('open');
         });
-        document.addEventListener('click', (e) => {
-            if (!burgerMenu.contains(e.target)) {
-                burgerBtn.classList.remove('open');
-                burgerMenu.classList.remove('open');
-            }
-        });
-    }
-
-    const badge = document.getElementById('user-badge');
-    if (badge) {
-        // Vercel'de backend olmadığı için demo kullanıcı gösteriyoruz
-        badge.innerHTML = '<span style="color:var(--color-primary);font-weight:700;cursor:default;">👤 Demo Kullanıcı</span>';
     }
 }
 
-/* ---------- Piyasa Tablosu (SABİT VERİ) ---------- */
-function loadMarketTable() {
+/* ---------- Canlı BIST 100 Tablosu ---------- */
+async function loadMarketTable() {
     const table = document.getElementById('market-table-home');
     if (!table) return;
     const tbody = table.querySelector('tbody');
-    
-    const mockData = [
-        { s: "THYAO", p: 285.50, c: 1.25 },
-        { s: "ASELS", p: 58.30, c: -0.45 },
-        { s: "EREGL", p: 45.12, c: 0.85 },
-        { s: "TUPRS", p: 165.40, c: 2.10 },
-        { s: "SASANI", p: 38.20, c: -1.20 },
-        { s: "KCHOL", p: 192.30, c: 0.55 },
-        { s: "SISE", p: 48.10, c: -0.10 }
+
+    // BIST 100'ün en önemli hisseleri (Listenin tamamını buraya ekleyebilirsin)
+    const bistHisseler = [
+        "THYAO", "ASELS", "EREGL", "TUPRS", "SAHOL", "KCHOL", "SISE", "AKBNK", "ISCTR", "GARAN",
+        "YKBNK", "BIMAS", "FROTO", "TOASO", "ARCLK", "PETKM", "SASA", "HEKTS", "PGSUS", "EKGYO",
+        "ENKAI", "KARDM", "BORSANEWS", "ASTOR", "KONTR", "SMRTG", "ALARK", "GUBRF", "ODAS", "KOZAL"
     ];
 
-    tbody.innerHTML = '';
-    mockData.forEach(row => {
-        const cls = row.c > 0 ? 'val-up' : (row.c < 0 ? 'val-down' : '');
-        const sign = row.c > 0 ? '+' : '';
-        const tr = document.createElement('tr');
-        tr.style.cursor = 'pointer';
-        tr.onclick = () => window.location.href = `/bist100.html`;
-        
-        tr.innerHTML = `
-            <td><button class="star-btn">☆</button></td>
-            <td class="sym-name">${row.s}</td>
-            <td style="text-align:right">${row.p.toFixed(2)} ₺</td>
-            <td class="${cls}" style="text-align:right">${sign}${row.c}%</td>`;
-        tbody.appendChild(tr);
-    });
-}
-
-/* ---------- Halka Arzlar (SABİT VERİ) ---------- */
-function loadIpoWidget() {
-    const ipoContainer = document.getElementById('ipo-list');
-    if (!ipoContainer) return;
-    
-    const mockIpos = [
-        { title: "Limak Doğu Anadolu Çimento", date: "Talep Toplanıyor", slug: "limak" },
-        { title: "Mogan Enerji", date: "Yakında", slug: "mogan" },
-        { title: "Artemis Halı", date: "Onay Bekliyor", slug: "artemis" }
-    ];
-
-    ipoContainer.innerHTML = '';
-    mockIpos.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'ipo-item';
-        div.innerHTML = `<span class="ipo-name">${item.title}</span><span class="ipo-tarih">${item.date}</span>`;
-        div.onclick = () => window.location.href = `/halkaarz.html`;
-        ipoContainer.appendChild(div);
-    });
-}
-
-/* ---------- Haber Akışı (SABİT VERİ) ---------- */
-function initNews() {
-    const newsContainer = document.getElementById('news-feed-container');
-    const modal = document.getElementById('news-modal');
-    if (!newsContainer) return;
-    
-    const mockNews = [
-        { 
-            title: "BIST 100 Endeksi 10.000 Puan Sınırında", 
-            description: "Türkiye piyasaları pozitif ayrışmaya devam ediyor. Analistler 10.200 seviyesinin kritik direnç olduğunu belirtiyor.", 
-            published: "15 dk önce" 
-        },
-        { 
-            title: "Altın Fiyatlarında Ons Etkisi", 
-            description: "Küresel piyasalarda ons altının değer kazanmasıyla birlikte gram altın yeni rekor seviyelere yaklaştı.", 
-            published: "1 saat önce" 
-        }
-    ];
-
-    newsContainer.innerHTML = '';
-    mockNews.forEach(n => {
-        const div = document.createElement('div');
-        div.className = 'news-item';
-        div.innerHTML = `
-            <div class="news-title">${n.title}</div>
-            <div class="news-preview">${n.description.substring(0, 70)}...</div>
-            <div class="news-date">${n.published}</div>`;
-        
-        div.addEventListener('click', () => {
-            if (document.getElementById('modal-title')) document.getElementById('modal-title').textContent = n.title;
-            if (document.getElementById('modal-body')) document.getElementById('modal-body').innerHTML = n.description;
-            if (modal) modal.classList.add('active');
+    try {
+        // Ücretsiz TradingView tarama API'sini kullanarak güncel verileri çekiyoruz
+        const response = await fetch('https://scanner.tradingview.com/turkey/scan', {
+            method: 'POST',
+            body: JSON.stringify({
+                "symbols": { "tickers": bistHisseler.map(s => `BIST:${s}`) },
+                "columns": ["close", "change", "change_abs"]
+            })
         });
-        newsContainer.appendChild(div);
-    });
-    
-    const closeBtn = document.getElementById('modal-close');
-    if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
+        const res = await response.json();
+        
+        tbody.innerHTML = '';
+        res.data.forEach(row => {
+            const sym = row.s.split(':')[1];
+            const price = row.d[0].toFixed(2);
+            const change = row.d[1].toFixed(2);
+            const cls = change > 0 ? 'val-up' : (change < 0 ? 'val-down' : '');
+            const sign = change > 0 ? '+' : '';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><button class="star-btn">☆</button></td>
+                <td class="sym-name">${sym}</td>
+                <td style="text-align:right">${price} ₺</td>
+                <td class="${cls}" style="text-align:right">${sign}${change}%</td>`;
+            tbody.appendChild(tr);
+        });
+    } catch (e) {
+        console.error("Veri çekilemedi:", e);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Veriler şu an güncellenemiyor.</td></tr>';
+    }
 }
 
-/* ---------- Grafik Motoru (SABİT VERİ) ---------- */
-window.loadNativeChart = function(symbol, period, canvasId, color='#0f766e', bgColor='rgba(15, 118, 110, 0.1)') {
+/* ---------- Canlı Grafik Motoru (TradingView Kaynaklı) ---------- */
+window.loadNativeChart = async function(symbol, period, canvasId) {
     let canvas = document.getElementById(canvasId);
     if(!canvas) return;
-    let wrapper = canvas.parentElement;
-
-    // Butonların aktiflik durumunu güncelle
-    let intervals = wrapper.querySelector('.chart-intervals');
-    if(intervals) {
-        intervals.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        let activeBtn = intervals.querySelector(`[data-p="${period}"]`);
-        if(activeBtn) activeBtn.classList.add('active');
-    }
-
-    // Grafik Verisi
-    const data = {
-        dates: ['09:00', '11:00', '13:00', '15:00', '17:00', '18:00', 'Kapanış'],
-        closes: [10100, 10250, 10180, 10320, 10450, 10380, 10400.50],
-        current_price: 10400.50,
-        change_pct: 1.25
-    };
-
-    // Fiyat ve Yüzde Güncelleme
+    const wrapper = canvas.parentElement;
     const priceEl = wrapper.querySelector('.chart-price');
-    if(priceEl) {
-        priceEl.innerHTML = `${data.current_price.toLocaleString('tr-TR')} ₺ 
-        <span style="color:#10b981; font-weight:900; font-size:1.1rem; padding-left:0.5rem;">+${data.change_pct}%</span>`;
-    }
 
-    if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+    try {
+        // Güncel endeks verisini çek
+        const ticker = symbol === 'XU100' ? 'BIST:XU100' : `BIST:${symbol}`;
+        const response = await fetch('https://scanner.tradingview.com/turkey/scan', {
+            method: 'POST',
+            body: JSON.stringify({ "symbols": { "tickers": [ticker] }, "columns": ["close", "change"] })
+        });
+        const res = await response.json();
+        const livePrice = res.data[0].d[0];
+        const liveChange = res.data[0].d[1];
 
-    const ctx = canvas.getContext('2d');
-    chartInstances[canvasId] = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: data.dates,
-            datasets: [{
-                label: symbol,
-                data: data.closes,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                pointRadius: 0,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { display: true, grid: { display: false } },
-                y: { position: 'right', grid: { color: '#f1f5f9' } }
-            }
+        if(priceEl) {
+            const color = liveChange >= 0 ? '#10b981' : '#ef4444';
+            priceEl.innerHTML = `${livePrice.toLocaleString('tr-TR')} ₺ 
+            <span style="color:${color}; font-weight:900; font-size:1.1rem; padding-left:0.5rem;">
+                ${liveChange >= 0 ? '+' : ''}${liveChange.toFixed(2)}%
+            </span>`;
         }
-    });
+
+        // Grafik Çizimi (SABİT VERİ + CANLI FİYAT)
+        if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+        const ctx = canvas.getContext('2d');
+        chartInstances[canvasId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['09:00', '11:00', '13:00', '15:00', '17:00', 'Şu an'],
+                datasets: [{
+                    data: [10100, 10250, 10180, 10320, 10450, livePrice],
+                    borderColor: liveChange >= 0 ? '#10b981' : '#ef4444',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true, tension: 0.3, pointRadius: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    } catch(e) { console.error("Grafik verisi alınamadı"); }
 };
+
+/* ---------- Haberler ve Halka Arzlar (Statik - Çünkü API Gerektirir) ---------- */
+function loadIpoWidget() {
+    const container = document.getElementById('ipo-list');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="ipo-item"><span>Limak Doğu Anadolu</span><span class="ipo-tarih">Talep Toplanıyor</span></div>
+        <div class="ipo-item"><span>Mogan Enerji</span><span class="ipo-tarih">Yakında</span></div>`;
+}
+
+function initNews() {
+    const container = document.getElementById('news-feed-container');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="news-item"><div class="news-title">BIST 100 Rekora Koşuyor</div><div class="news-date">Canlı</div></div>
+        <div class="news-item"><div class="news-title">FED Faiz Kararı Bekleniyor</div><div class="news-date">1 sa önce</div></div>`;
+}
