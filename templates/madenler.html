@@ -30,8 +30,8 @@
 <body>
     <header class="top-nav">
         <a href="/" class="logo">
-            <span class="logo-gem">◆</span>
-            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
         </a>
         <div class="burger-area">
             <button class="burger-btn" id="burger-btn" aria-label="Menü">
@@ -63,31 +63,45 @@
             <div class="left-col">
                 <div class="metals-list" id="metals-grid">
                     <div class="metal-card gold-card">
-                        <div class="metal-header"><span class="metal-name">Altın (XAU)</span> <span class="metal-symbol">Ons/$</span></div>
+                        <div class="metal-header"><span class="metal-name">Ons Altın (XAU)</span> <span class="metal-symbol">$/Ons</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-gold">...</div></div>
                     </div>
                     <div class="metal-card">
-                        <div class="metal-header"><span class="metal-name">Gram Altın</span> <span class="metal-symbol">₺</span></div>
+                        <div class="metal-header"><span class="metal-name">Gram Altın</span> <span class="metal-symbol">₺/gr</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-gram">...</div></div>
                     </div>
                     <div class="metal-card">
-                        <div class="metal-header"><span class="metal-name">Çeyrek Altın</span> <span class="metal-symbol">₺</span></div>
+                        <div class="metal-header"><span class="metal-name">Çeyrek Altın</span> <span class="metal-symbol">₺/Adet</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-ceyrek">...</div></div>
                     </div>
                     <div class="metal-card">
-                        <div class="metal-header"><span class="metal-name">Gümüş (XAG)</span> <span class="metal-symbol">Ons/$</span></div>
+                        <div class="metal-header"><span class="metal-name">Gümüş (XAG)</span> <span class="metal-symbol">$/Ons</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-silver">...</div></div>
                     </div>
                     <div class="metal-card">
-                        <div class="metal-header"><span class="metal-name">Platin & Paladyum</span> <span class="metal-symbol">Ons/$</span></div>
+                        <div class="metal-header"><span class="metal-name">Platin</span> <span class="metal-symbol">$/Ons</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-platinum">...</div></div>
                     </div>
                 </div>
 
                 <div class="charts-grid">
-                    <div class="tv-wrap-sm" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
-                        <div class="scroll-protector"></div>
-                        <div id="tv-gold" style="height:100%;"></div>
+                    <div class="tv-wrap-sm" style="position:relative; background:#fff; border-radius:12px; overflow:hidden;">
+                        <div class="chart-header" style="flex-direction:column; align-items:flex-start; gap:0.5rem; padding: 1rem;">
+                            <div class="chart-price-block" style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div class="chart-symbol-badge">ONS ALTIN</div>
+                                    <div class="chart-price" style="font-size:1.4rem;">Yükleniyor...</div>
+                                </div>
+                                <div class="chart-intervals">
+                                    <button onclick="loadNativeChart('GOLD', '1d', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1d">1G</button>
+                                    <button onclick="loadNativeChart('GOLD', '1mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1mo">1A</button>
+                                    <button onclick="loadNativeChart('GOLD', '3mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="3mo">3A</button>
+                                    <button onclick="loadNativeChart('GOLD', '6mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="6mo" class="active">6A</button>
+                                    <button onclick="loadNativeChart('GOLD', '1y', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1y">1Y</button>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="goldChart" style="padding-top:6rem; padding-bottom:1rem;"></canvas>
                     </div>
                 </div>
             </div>
@@ -111,13 +125,11 @@
             <h2 id="modal-title" style="font-family:var(--font-display); color:var(--color-primary); margin-bottom: 1rem; font-size:1.8rem;">Haber Başlığı</h2>
             <div style="color: #666; font-size:0.9rem; margin-bottom:1.5rem;" id="modal-date"></div>
             <div id="modal-body" style="line-height:2; font-size:1.05rem; color:#333;"></div>
-            <div style="margin-top:2rem; text-align:center;">
-                <a id="modal-link" href="#" target="_blank" style="display:inline-block; padding:1rem 2rem; background:var(--color-primary); color:#fff; text-decoration:none; border-radius:8px; font-weight:700;">Haberin Tamamını Oku</a>
-            </div>
+            <a id="modal-link" style="display:none"></a>
         </div>
     </div>
 
-    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/static/script.js"></script>
     <script>
         function closeNewsModal(e) {
@@ -128,8 +140,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
             
-            // Altın Grafiği
-            new TradingView.widget({"autosize":true,"symbol":"TVC:GOLD","interval":"D","theme":"light","style":"3","locale":"tr","container_id":"tv-gold","hide_legend":true,"save_image":false});
+            // Altın Grafiği (Native Chart.js)
+            if(window.loadNativeChart) {
+                loadNativeChart('GOLD', '6mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true);
+            }
             
             // Fiyatları çek
             fetch('/api/metals')
@@ -163,8 +177,9 @@
                         div.onclick = () => {
                             document.getElementById('modal-title').textContent = n.title;
                             document.getElementById('modal-date').textContent = n.published;
-                            document.getElementById('modal-body').textContent = n.description + " Haberin daha uzun ve detaylı hali için lütfen kaynağı ziyaret ediniz.";
-                            document.getElementById('modal-link').href = n.link;
+                            document.getElementById('modal-body').innerHTML = n.description;
+                            const mlink = document.getElementById('modal-link');
+                            if (mlink) mlink.style.display = 'none';
                             document.getElementById('news-modal').classList.add('active');
                         };
                         c.appendChild(div);

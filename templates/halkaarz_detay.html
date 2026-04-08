@@ -27,11 +27,30 @@
 <body>
     <header class="top-nav">
         <a href="/" class="logo">
-            <span class="logo-gem">◆</span>
-            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
         </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
         <div id="user-badge" class="user-badge"></div>
+
+        <nav class="burger-menu" id="burger-menu">
+            <ul>
+                <li class="span-2"><a href="/">Ana Sayfa</a></li>
+                <li><a href="/bist100.html">BİST 100</a></li>
+                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
+                <li><a href="/takip">Takip Listem</a></li>
+                <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
+               <li id="burger-auth" style="grid-column: span 2;"></li>
+            </ul>
+        </nav>
     </header>
+    <script src="/static/script.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', initUI);</script>
 
     <main class="ipo-detail-page">
         <a href="javascript:history.back()" class="back-nav">← Piyasaya Geri Dön</a>

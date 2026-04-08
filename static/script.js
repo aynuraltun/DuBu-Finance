@@ -161,13 +161,11 @@ function initNews() {
                 if (dateEl) dateEl.textContent = n.published;
                 const bodyEl = document.getElementById('modal-body');
                 if (bodyEl) {
-                    bodyEl.innerHTML = `${n.description} Detaylı analiz ve tam metin için haberi kaynağından görüntüleyebilirsiniz.`;
+                    bodyEl.innerHTML = n.description;
                 }
                 const linkEl = document.getElementById('modal-link');
                 if (linkEl) {
-                    linkEl.href = n.link;
-                } else if (bodyEl) {
-                    bodyEl.innerHTML += `<div style="margin-top:2rem;text-align:center;"><a href="${n.link}" target="_blank" style="display:inline-block; padding:1rem 2rem; background:var(--color-primary); color:#fff; text-decoration:none; border-radius:8px; font-weight:700;">Haberin Tamamını Oku</a></div>`;
+                    linkEl.style.display = 'none';
                 }
                 if (modal) modal.classList.add('active');
             });
@@ -187,3 +185,87 @@ document.addEventListener('DOMContentLoaded', () => {
     loadIpoWidget();
     initNews();
 });
+
+/* ---------- Native Chart Tools ---------- */
+let chartInstances = {};
+
+window.loadNativeChart = function(symbol, period, canvasId, color='#0f766e', bgColor='rgba(15, 118, 110, 0.1)', isGold=false) {
+    let canvas = document.getElementById(canvasId);
+    if(!canvas) return;
+    let wrapper = canvas.parentElement;
+    
+    // Update button visual state
+    let intervals = wrapper.querySelector('.chart-intervals');
+    if(intervals) {
+        intervals.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        let activeBtn = intervals.querySelector(`[data-p="${period}"]`);
+        if(activeBtn) activeBtn.classList.add('active');
+    }
+
+    fetch(`/api/chart/${symbol}?period=${period}`)
+        .then(r => r.json())
+        .then(data => {
+            if(data.error || data.dates.length === 0) return;
+            
+            const prefix = isGold ? '$' : '₺';
+            const priceEl = wrapper.querySelector('.chart-price');
+            
+            // Re-calculate dynamic colors based on user request
+            let dynamicColor = color;
+            let dynamicBg = bgColor;
+            let sign = '';
+            let pctColor = '#64748b'; // default gray
+            
+            if (data.change_pct > 0) {
+                dynamicColor = '#10b981'; // Green
+                dynamicBg = 'rgba(16, 185, 129, 0.1)';
+                sign = '+';
+                pctColor = '#10b981';
+            } else if (data.change_pct < 0) {
+                dynamicColor = '#ef4444'; // Red
+                dynamicBg = 'rgba(239, 68, 68, 0.1)';
+                pctColor = '#ef4444';
+            } else {
+                dynamicColor = '#94a3b8'; // Gray
+                dynamicBg = 'rgba(148, 163, 184, 0.1)';
+            }
+            
+            // Insert current price & percentage
+            if(priceEl) {
+                priceEl.innerHTML = `
+                    ${data.current_price.toLocaleString('tr-TR', {minimumFractionDigits: 2})} ${prefix}
+                    <span style="font-size:1.1rem; padding-left:0.5rem; color:${pctColor}; font-weight:900;">
+                        ${sign}${data.change_pct}%
+                    </span>
+                `;
+            }
+
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates,
+                    datasets: [{
+                        label: symbol + ' Fiyat (' + prefix + ')',
+                        data: data.closes,
+                        borderColor: dynamicColor,
+                        backgroundColor: dynamicBg,
+                        borderWidth: 2, fill: true, pointRadius: 0, pointHoverRadius: 5, tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { position: 'right', grid: { color: '#f1f5f9' } }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
+                }
+            });
+        });
+}

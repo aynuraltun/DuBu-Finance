@@ -1,6 +1,7 @@
 /* =========================================
    DUBU FINANCE — Premium Design Styles
    ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
 :root {
   --color-primary: #013b2c; /* Zümrüt Yeşili */
@@ -11,18 +12,19 @@
   --color-muted: #64748b;
   --color-up: #059669;
   --color-down: #dc2626;
-  --font-display: 'Roboto', sans-serif;
-  --font-body: 'Open Sans', sans-serif;
-  --font-data: 'Roboto Mono', monospace;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Lato', sans-serif;
+  --font-data: 'Lato', sans-serif;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
-* { margin: 0; padding: 0; box-box: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
+  font-family: var(--font-body);
   font-family: var(--font-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -43,10 +45,31 @@ body {
   border-bottom: 2px solid var(--color-primary);
 }
 
-.logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--color-primary); }
-.logo-gem { font-size: 1.5rem; }
-.logo-text { font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; letter-spacing: -0.02em; }
-.logo-light { font-weight: 300; opacity: 0.8; }
+/* Premium Showy Logo */
+.logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.2rem; 
+  text-decoration: none; 
+}
+.logo-main {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, #059669 0%, #013b2c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1.5px;
+}
+.logo-sub {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 2.2rem;
+  font-style: italic;
+  color: var(--color-muted);
+  letter-spacing: -0.5px;
+  margin-left: 5px;
+}
 
 .burger-btn {
   background: none; border: none; cursor: pointer;
@@ -105,6 +128,10 @@ body {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr 1fr;
   gap: 2rem;
+}
+
+@media(max-width: 1200px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
 }
 
 .card { background: var(--color-surface); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
@@ -225,3 +252,14 @@ body {
 .toast-msg.show {
     bottom: 40px;
 }
+
+/* ---- Native Chart Tools ---- */
+.chart-header { display: flex; justify-content: space-between; align-items: flex-end; padding: 1rem 1.5rem; position: absolute; top:0; left:0; right:0; z-index: 10; pointer-events: none; }
+.chart-price-block { background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 8px; pointer-events: auto; box-shadow: var(--shadow-sm); }
+.chart-price { font-size: 1.6rem; font-weight: 900; color: var(--color-text); font-family: var(--font-data); }
+.chart-symbol-badge { font-family: var(--font-display); color: var(--color-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem;}
+
+.chart-intervals { display: flex; gap: 0.5rem; pointer-events: auto; }
+.chart-intervals button { background: #fff; border: 1px solid #e2e8f0; color: #64748b; font-weight: 700; padding: 0.3rem 0.6rem; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.8rem;}
+.chart-intervals button:hover { background: #f8fafc; color: var(--color-text); }
+.chart-intervals button.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }

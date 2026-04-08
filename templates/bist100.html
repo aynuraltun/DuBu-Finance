@@ -13,8 +13,8 @@
 <body>
     <header class="top-nav">
         <a href="/" class="logo">
-            <span class="logo-gem">◆</span>
-            <span class="logo-text">Dubu <span class="logo-light">Finance</span></span>
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
         </a>
         <div class="burger-area">
             <button class="burger-btn" id="burger-btn" aria-label="Menü">
@@ -47,8 +47,10 @@
                     <tr>
                         <th style="width:50px"></th>
                         <th>Sembol</th>
+                        <th>Şirket Adı</th>
                         <th style="text-align:right">Son Fiyat</th>
                         <th style="text-align:right">Değişim (%)</th>
+                        <th style="text-align:right">Hacim</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,8 +73,11 @@
                 }
                 res.data.forEach(row => {
                     const sym = row.s.split(':')[1];
-                    const price = row.d[1].toFixed(2);
+                    const name = row.d[0];
+                    const price = row.d[1].toLocaleString('tr-TR', {minimumFractionDigits:2});
                     const change = row.d[2].toFixed(2);
+                    const volume = row.d[3] > 1e6 ? (row.d[3]/1e6).toFixed(1) + 'M' : row.d[3].toLocaleString('tr-TR');
+                    
                     const cls = change > 0 ? 'val-up' : (change < 0 ? 'val-down' : '');
                     const sign = change > 0 ? '+' : '';
                     const isFav = typeof userFavorites !== 'undefined' && userFavorites.has(sym);
@@ -82,8 +87,10 @@
                     tr.innerHTML = `
                         <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
                         <td class="sym-name">${sym}</td>
+                        <td style="color:#64748b; font-size:0.85rem; font-weight:500;">${name}</td>
                         <td style="text-align:right">${price} ₺</td>
-                        <td class="${cls}" style="text-align:right">${sign}${change}%</td>`;
+                        <td class="${cls}" style="text-align:right; font-weight:800;">${sign}${change}%</td>
+                        <td style="text-align:right; color:#64748b; font-size:0.85rem;">${volume}</td>`;
                     tbody.appendChild(tr);
                 });
             });
