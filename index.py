@@ -286,3 +286,5 @@ def api_chart(symbol):
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
+
+# Vercel Deployment Sync: Wed Apr  8 21:33:53 +03 2026
