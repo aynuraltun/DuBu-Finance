@@ -153,12 +153,26 @@ function initNews() {
         news.forEach(n => {
             const div = document.createElement('div');
             div.className = 'news-item';
-            div.innerHTML = `<div class="news-title">${n.title}</div><div class="news-preview">${n.description}...</div><div class="news-date">${n.published}</div>`;
+            
+            const sentimentHtml = n.sentiment_text ? `
+                <div style="font-size: 0.85rem; font-weight: 700; color: ${n.sentiment_color}; margin-top: 0.3rem; margin-bottom: 0.5rem; display:flex; align-items:center; gap:0.4rem;">
+                    ${n.sentiment_icon} <span style="opacity:0.9">${n.sentiment_text}</span>
+                </div>` : '';
+
+            div.innerHTML = `
+                <div class="news-title">${n.title}</div>
+                ${sentimentHtml}
+                <div class="news-preview" style="display:none;">${n.description}</div>
+                <div class="news-date" style="margin-top:0.5rem;">${n.published}</div>
+            `;
+            
             div.addEventListener('click', () => {
                 const titleEl = document.getElementById('modal-title');
                 if (titleEl) titleEl.textContent = n.title;
                 const dateEl = document.getElementById('modal-date');
-                if (dateEl) dateEl.textContent = n.published;
+                if (dateEl) {
+                    dateEl.innerHTML = n.published + (n.sentiment_text ? `<span style="margin-left:1rem; color:${n.sentiment_color}; font-weight:bold">${n.sentiment_icon} ${n.sentiment_text}</span>` : '');
+                }
                 const bodyEl = document.getElementById('modal-body');
                 if (bodyEl) {
                     bodyEl.innerHTML = n.description;
