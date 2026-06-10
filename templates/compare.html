@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Varlık Kıyaslama Terminali - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) {
+            .compare-grid { grid-template-columns: 1fr; }
+        }
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--color-secondary);
+            background: var(--color-secondary-light);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto;
+            border: 2px solid var(--color-secondary);
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.2);
+        }
+        .compare-autocomplete-container {
+            position: relative;
+        }
+        .autocomplete-results {
+            position: absolute;
+            top: 105%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #e2e8f0;
+        }
+        .autocomplete-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--color-primary);
+            transition: 0.2s;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .autocomplete-item:hover {
+            background: var(--color-primary-light);
+            padding-left: 1.5rem;
+        }
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        .metrics-table th {
+            text-align: left;
+            padding: 0.75rem;
+            color: var(--color-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .metrics-table td {
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .stats-hero-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .stat-card-premium {
+            background: var(--color-primary-light);
+            border: 1px solid rgba(1, 59, 44, 0.15);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card-premium.asset2 {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+        .stat-card-premium .lbl {
+            font-size: 0.75rem;
+            color: var(--color-muted);
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        .stat-card-premium .val {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--color-primary);
+        }
+        .stat-card-premium.asset2 .val {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
+        </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+                <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="dashboard">
+        <div class="section-header">
+            <h2>📈 Gelişmiş Varlık Karşılaştırma Terminali</h2>
+            <div class="chart-intervals" id="compare-intervals">
+                <button onclick="changeComparePeriod('1mo')" data-p="1mo">1A</button>
+                <button onclick="changeComparePeriod('3mo')" data-p="3mo">3A</button>
+                <button onclick="changeComparePeriod('6mo')" data-p="6mo" class="active">6A</button>
+                <button onclick="changeComparePeriod('1y')" data-p="1y">1Y</button>
+                <button onclick="changeComparePeriod('5y')" data-p="5y">5Y</button>
+            </div>
+        </div>
+
+        <div class="compare-grid">
+            <!-- 1. Asset Card -->
+            <div class="card" style="padding: 1.5rem;">
+                <h3 style="color:var(--color-primary); font-family:var(--font-display); margin-bottom:1rem;">🔍 1. Varlık Seçimi</h3>
+                <div class="compare-autocomplete-container">
+                    <input type="text" id="asset1" class="compare-input" style="width: 100%; padding: 0.9rem; border: 2px solid var(--color-primary); border-radius: 12px; font-weight:700; font-size:1.1rem; color:var(--color-primary); background:#fff;" placeholder="Hisse veya Fon kodu yazın (Örn: THYAO)" value="THYAO">
+                    <div id="results1" class="autocomplete-results"></div>
+                </div>
+                
+                <div class="stats-hero-grid">
+                    <div class="stat-card-premium">
+                        <div class="lbl">Güncel Fiyat</div>
+                        <div class="val" id="price1">-</div>
+                    </div>
+                    <div class="stat-card-premium">
+                        <div class="lbl">Periyot Getirisi</div>
+                        <div class="val" id="return1">-</div>
+                    </div>
+                    <div class="stat-card-premium">
+                        <div class="lbl">Volatilite</div>
+                        <div class="val" id="vol1">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Asset Card -->
+            <div class="card" style="padding: 1.5rem;">
+                <h3 style="color:#dc2626; font-family:var(--font-display); margin-bottom:1rem;">🔍 2. Varlık Seçimi</h3>
+                <div class="compare-autocomplete-container">
+                    <input type="text" id="asset2" class="compare-input" style="width: 100%; padding: 0.9rem; border: 2px solid #dc2626; border-radius: 12px; font-weight:700; font-size:1.1rem; color:#dc2626; background:#fff;" placeholder="Hisse veya Fon kodu yazın (Örn: XU100)" value="XU100">
+                    <div id="results2" class="autocomplete-results"></div>
+                </div>
+
+                <div class="stats-hero-grid">
+                    <div class="stat-card-premium asset2">
+                        <div class="lbl">Güncel Fiyat</div>
+                        <div class="val" id="price2">-</div>
+                    </div>
+                    <div class="stat-card-premium asset2">
+                        <div class="lbl">Periyot Getirisi</div>
+                        <div class="val" id="return2">-</div>
+                    </div>
+                    <div class="stat-card-premium asset2">
+                        <div class="lbl">Volatilite</div>
+                        <div class="val" id="vol2">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Graphic Card -->
+        <div class="card" style="padding: 1.5rem; margin-bottom: 2rem;">
+            <div style="font-weight:700; color:var(--color-primary); margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem; font-size:1.1rem;">
+                📈 Kümülatif Normalize Performans Grafiği (%)
+            </div>
+            <div style="height: 480px; position: relative;">
+                <canvas id="compareChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Quantitative Details Grid -->
+        <div class="card" style="padding: 1.5rem;">
+            <h3 style="color:var(--color-primary); font-family:var(--font-display); margin-bottom:1rem;">📊 Detaylı Risk/Getiri Karşılaştırma Matrisi</h3>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Analiz Metriği</th>
+                        <th id="tbl-asset1">THYAO</th>
+                        <th id="tbl-asset2">XU100</th>
+                        <th>Fark (A - B)</th>
+                    </tr>
+                </thead>
+                <tbody id="metrics-body">
+                    <tr>
+                        <td style="color:#4b5563;">Maksimum Düşüş (Max Drawdown)</td>
+                        <td id="mdd1">-</td>
+                        <td id="mdd2">-</td>
+                        <td id="mdd-diff">-</td>
+                    </tr>
+                    <tr>
+                        <td style="color:#4b5563;">En İyi Günlük Getiri</td>
+                        <td id="best1">-</td>
+                        <td id="best2">-</td>
+                        <td id="best-diff">-</td>
+                    </tr>
+                    <tr>
+                        <td style="color:#4b5563;">En Kötü Günlük Getiri</td>
+                        <td id="worst1">-</td>
+                        <td id="worst2">-</td>
+                        <td id="worst-diff">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/script.js"></script>
+    <script>
+        const symbolNames = {
+            "THYAO": "Türk Hava Yolları",
+            "ASELS": "Aselsan Elektronik",
+            "EREGL": "Ereğli Demir Çelik",
+            "TUPRS": "Tüpraş Petrol Rafinerileri",
+            "SAHOL": "Sabancı Holding",
+            "KCHOL": "Koç Holding",
+            "SISE": "Şişecam",
+            "AKBNK": "Akbank",
+            "ISCTR": "İş Bankası (C)",
+            "GARAN": "Garanti BBVA",
+            "YKBNK": "Yapı Kredi Bankası",
+            "BIMAS": "BİM Mağazalar",
+            "FROTO": "Ford Otosan",
+            "SASA": "Sasa Polyester",
+            "HEKTS": "Hektaş",
+            "PETKM": "Petkim",
+            "KOZAL": "Koza Altın",
+            "PGSUS": "Pegasus Havayolları",
+            "TOASO": "Tofaş Oto",
+            "ARCLK": "Arçelik",
+            "EKGYO": "Emlak Konut GYO",
+            "DOHOL": "Doğan Holding",
+            "HALKB": "Halkbank",
+            "VAKBN": "Vakıfbank",
+            "KRDMD": "Kardemir (D)",
+            "TCELL": "Turkcell",
+            "TTKOM": "Türk Telekom",
+            "ENKAI": "Enka İnşaat",
+            "VESTL": "Vestel",
+            "XU100": "BIST 100 Endeksi",
+            "MAC": "Marmara Capital Portföy Hisse Fonu",
+            "TCD": "Tacirler Portföy Değişken Fon",
+            "GMR": "Inveo Portföy Hisse Fonu",
+            "TGE": "İş Portföy Yabancı Hisse Fonu",
+            "AFT": "Ak Portföy Yeni Teknolojiler Fonu",
+            "YZG": "Yapı Kredi Portföy Altın Fonu"
+        };
+
+        const symbols = Object.keys(symbolNames);
+        let compareChartInstance = null;
+        let currentPeriod = '6mo';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            setupAutocomplete('asset1', 'results1');
+            setupAutocomplete('asset2', 'results2');
+            updateCompareData();
+        });
+
+        function setupAutocomplete(inputId, resultsId) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+
+            input.onfocus = () => showFiltered(input.value);
+            input.oninput = (e) => showFiltered(e.target.value);
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    results.style.display = 'none';
+                    updateCompareData();
+                }
+            };
+            input.onblur = () => {
+                setTimeout(() => {
+                    results.style.display = 'none';
+                    updateCompareData();
+                }, 250);
+            };
+
+            function showFiltered(val) {
+                const q = val.toUpperCase();
+                const filtered = symbols.filter(s => s.includes(q) || symbolNames[s].toUpperCase().includes(q));
+                results.innerHTML = '';
+                if(filtered.length) {
+                    filtered.forEach(s => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.style.display = 'flex';
+                        div.style.justifyContent = 'space-between';
+                        div.style.alignItems = 'center';
+                        div.style.padding = '0.8rem 1rem';
+                        div.innerHTML = `
+                            <span style="font-weight:900; color:var(--color-primary);">${s}</span>
+                            <span style="font-size:0.8rem; color:var(--color-muted); font-weight:500; text-align:right; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${symbolNames[s]}</span>
+                        `;
+                        div.onclick = () => {
+                            input.value = s;
+                            results.style.display = 'none';
+                            updateCompareData();
+                        };
+                        results.appendChild(div);
+                    });
+                    results.style.display = 'block';
+                } else {
+                    results.style.display = 'none';
+                }
+            }
+
+            document.addEventListener('click', (e) => {
+                if(!input.contains(e.target) && !results.contains(e.target)) {
+                    results.style.display = 'none';
+                }
+            });
+        }
+
+        function changeComparePeriod(p) {
+            currentPeriod = p;
+            document.querySelectorAll('#compare-intervals button').forEach(b => {
+                b.classList.toggle('active', b.dataset.p === p);
+            });
+            updateCompareData();
+        }
+
+        async function updateCompareData() {
+            const a1 = document.getElementById('asset1').value.toUpperCase();
+            const a2 = document.getElementById('asset2').value.toUpperCase();
+
+            document.getElementById('tbl-asset1').textContent = a1;
+            document.getElementById('tbl-asset2').textContent = a2;
+
+            try {
+                const [d1, d2] = await Promise.all([
+                    fetch(`/api/chart/${a1}?period=${currentPeriod}`).then(r => r.json()),
+                    fetch(`/api/chart/${a2}?period=${currentPeriod}`).then(r => r.json())
+                ]);
+
+                if(d1.error || d2.error) return;
+
+                // Align dates and closes safely
+                const alignedDates = [];
+                const alignedCloses1 = [];
+                const alignedCloses2 = [];
+
+                if (d1.closes.length === d2.closes.length) {
+                    for (let i = 0; i < d1.closes.length; i++) {
+                        alignedDates.push(d1.dates[i]);
+                        alignedCloses1.push(d1.closes[i]);
+                        alignedCloses2.push(d2.closes[i]);
+                    }
+                } else {
+                    const map2 = {};
+                    d2.dates.forEach((date, i) => { map2[date] = d2.closes[i]; });
+                    let lastVal2 = d2.closes[0] || 0;
+                    
+                    d1.dates.forEach((date, i) => {
+                        alignedDates.push(date);
+                        alignedCloses1.push(d1.closes[i]);
+                        if (map2[date] !== undefined) {
+                            lastVal2 = map2[date];
+                        }
+                        alignedCloses2.push(lastVal2);
+                    });
+                }
+
+                const base1 = alignedCloses1[0] || 1;
+                const base2 = alignedCloses2[0] || 1;
+                const norm1 = alignedCloses1.map(c => ((c - base1) / base1) * 100);
+                const norm2 = alignedCloses2.map(c => ((c - base2) / base2) * 100);
+
+                const final1 = norm1[norm1.length-1] || 0;
+                const final2 = norm2[norm2.length-1] || 0;
+
+                document.getElementById('price1').textContent = d1.current_price.toLocaleString('tr-TR') + " ₺";
+                document.getElementById('price2').textContent = d2.current_price.toLocaleString('tr-TR') + " ₺";
+
+                document.getElementById('return1').innerHTML = `<span class="${final1>=0?'val-up':'val-down'}">%${final1.toFixed(2)}</span>`;
+                document.getElementById('return2').innerHTML = `<span class="${final2>=0?'val-up':'val-down'}">%${final2.toFixed(2)}</span>`;
+
+                const getDailyRets = (closes) => {
+                    let rets = [];
+                    for(let i=1; i<closes.length; i++) {
+                        rets.push(((closes[i] - closes[i-1]) / closes[i-1]) * 100);
+                    }
+                    return rets;
+                };
+
+                const rets1 = getDailyRets(alignedCloses1);
+                const rets2 = getDailyRets(alignedCloses2);
+
+                const getStd = (arr) => {
+                    if (arr.length === 0) return 0;
+                    const mean = arr.reduce((a,b)=>a+b, 0) / arr.length;
+                    const variance = arr.reduce((a,b)=>a + Math.pow(b-mean, 2), 0) / arr.length;
+                    return Math.sqrt(variance);
+                };
+
+                const std1 = getStd(rets1) || 0;
+                const std2 = getStd(rets2) || 0;
+
+                document.getElementById('vol1').textContent = `%${std1.toFixed(2)}`;
+                document.getElementById('vol2').textContent = `%${std2.toFixed(2)}`;
+
+                const getMaxDrawdown = (closes) => {
+                    let peak = -Infinity;
+                    let maxDd = 0;
+                    closes.forEach(c => {
+                        if(c > peak) peak = c;
+                        const dd = ((peak - c) / peak) * 100;
+                        if(dd > maxDd) maxDd = dd;
+                    });
+                    return maxDd;
+                };
+
+                const mdd1 = getMaxDrawdown(alignedCloses1);
+                const mdd2 = getMaxDrawdown(alignedCloses2);
+
+                document.getElementById('mdd1').textContent = `-%${mdd1.toFixed(2)}`;
+                document.getElementById('mdd2').textContent = `-%${mdd2.toFixed(2)}`;
+                document.getElementById('mdd-diff').textContent = `${(mdd1 - mdd2).toFixed(2)}%`;
+
+                const best1 = rets1.length > 0 ? Math.max(...rets1) : 0;
+                const best2 = rets2.length > 0 ? Math.max(...rets2) : 0;
+                const worst1 = rets1.length > 0 ? Math.min(...rets1) : 0;
+                const worst2 = rets2.length > 0 ? Math.min(...rets2) : 0;
+
+                document.getElementById('best1').textContent = `+%${best1.toFixed(2)}`;
+                document.getElementById('best2').textContent = `+%${best2.toFixed(2)}`;
+                document.getElementById('best-diff').textContent = `${(best1 - best2).toFixed(2)}%`;
+
+                document.getElementById('worst1').textContent = `-%${Math.abs(worst1).toFixed(2)}`;
+                document.getElementById('worst2').textContent = `-%${Math.abs(worst2).toFixed(2)}`;
+                document.getElementById('worst-diff').textContent = `${(worst1 - worst2).toFixed(2)}%`;
+
+                const ctx = document.getElementById('compareChart').getContext('2d');
+                if(compareChartInstance) compareChartInstance.destroy();
+
+                compareChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: alignedDates,
+                        datasets: [
+                            {
+                                label: `${a1} (%)`,
+                                data: norm1,
+                                borderColor: '#0f766e',
+                                borderWidth: 3.5,
+                                pointRadius: 0,
+                                fill: true,
+                                backgroundColor: 'rgba(15, 118, 110, 0.03)',
+                                tension: 0.25
+                            },
+                            {
+                                label: `${a2} (%)`,
+                                data: norm2,
+                                borderColor: '#ef4444',
+                                borderWidth: 3.5,
+                                pointRadius: 0,
+                                fill: true,
+                                backgroundColor: 'rgba(239, 68, 68, 0.03)',
+                                tension: 0.25
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { labels: { font: { weight: 'bold', size: 12 } } },
+                            tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: %${ctx.parsed.y.toFixed(2)}` } }
+                        },
+                        scales: {
+                            y: { grid: { color: '#f1f5f9' }, ticks: { callback: v => v + '%' } },
+                            x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } }
+                        }
+                    }
+                });
+
+            } catch(e) {
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+</html>

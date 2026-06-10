@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BİST 100 Hisseleri - Dubu Finance</title>
+    <title>Yatırım Fonları - Dubu Finance</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
     <style>
@@ -55,24 +55,23 @@
 
     <div class="page-wrap">
         <div class="section-header">
-            <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">BİST 100 Tüm Hisseler</h1>
-            <p style="color:var(--color-muted);">Piyasanın en çok hacimli 100 şirketi. Detaylar için hisselere tıklayın.</p>
+            <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">📈 Yatırım Fonları</h1>
+            <p style="color:var(--color-muted);">TEFAS verileri baz alınarak seçilmiş en popüler yatırım fonları.</p>
         </div>
         
         <div class="card" style="padding:0; overflow:hidden;">
-            <table class="market-table" id="bist100-table">
+            <table class="market-table" id="funds-table">
                 <thead>
                     <tr>
                         <th style="width:50px"></th>
-                        <th>Sembol</th>
-                        <th>Şirket Adı</th>
-                        <th style="text-align:right">Son Fiyat</th>
-                        <th style="text-align:right">Değişim (%)</th>
-                        <th style="text-align:right">Hacim</th>
+                        <th>Fon Kodu</th>
+                        <th>Fon Adı</th>
+                        <th style="text-align:right">Fiyat</th>
+                        <th style="text-align:right">Günlük Değişim</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td colspan="4" style="text-align:center; padding: 2rem;">Veriler çekiliyor... (Saliseler sürebilir)</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding: 2rem;">Fonlar yükleniyor...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -82,34 +81,32 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
-            fetch('/api/screener').then(r => r.json()).then(res => {
-                const tbody = document.querySelector('#bist100-table tbody');
+            fetch('/api/funds').then(r => r.json()).then(data => {
+                const tbody = document.querySelector('#funds-table tbody');
                 tbody.innerHTML = '';
-                if (!res.data || !res.data.length) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Veri bulunamadı.</td></tr>';
+                if (!data || !data.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Veri bulunamadı.</td></tr>';
                     return;
                 }
-                res.data.forEach(row => {
-                    const sym = row.s.split(':')[1];
-                    const name = row.d[0];
-                    const price = row.d[1].toLocaleString('tr-TR', {minimumFractionDigits:2});
-                    const rawChange = row.d[2];
+                data.forEach(row => {
+                    const sym = row.symbol;
+                    const name = row.name;
+                    const price = row.price.toLocaleString('tr-TR', {minimumFractionDigits:2});
+                    const rawChange = row.change;
                     const change = rawChange.toFixed(2);
-                    const volume = row.d[3] > 1e6 ? (row.d[3]/1e6).toFixed(1) + 'M' : row.d[3].toLocaleString('tr-TR');
                     
                     const color = rawChange > 0 ? '#059669' : (rawChange < 0 ? '#dc2626' : '#64748b');
                     const sign = rawChange > 0 ? '+' : '';
                     const isFav = typeof userFavorites !== 'undefined' && userFavorites.has(sym);
                     const tr = document.createElement('tr');
                     tr.style.cursor = 'pointer';
-                    tr.onclick = (e) => { if(e.target.tagName !== 'BUTTON') window.location.href=`/hisse/${sym}`; };
+                    tr.onclick = (e) => { if(e.target.tagName !== 'BUTTON') window.location.href=`/fon/${sym}`; };
                     tr.innerHTML = `
                         <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
                         <td class="sym-name">${sym}</td>
                         <td style="color:#64748b; font-size:0.85rem; font-weight:500;">${name}</td>
                         <td style="text-align:right">${price} ₺</td>
-                        <td style="color:${color}; text-align:right; font-weight:800;">${sign}${change}%</td>
-                        <td style="text-align:right; color:#64748b; font-size:0.85rem;">${volume}</td>`;
+                        <td style="color:${color}; text-align:right; font-weight:800;">${sign}${change}%</td>`;
                     tbody.appendChild(tr);
                 });
             });

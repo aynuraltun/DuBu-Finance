@@ -31,23 +31,41 @@
         </div>
         <div id="user-badge" class="user-badge"></div>
 
-        <nav class="burger-menu" id="burger-menu">
-            <ul>
-                <li class="span-2"><a href="/">Ana Sayfa</a></li>
-                <li><a href="/bist100.html">BİST 100</a></li>
-                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
-                <li><a href="/takip">Takip Listem</a></li>
-                <li><a href="/halkaarz.html" style="border-color:#f59e0b; color:#d97706;">Halka Arzlar</a></li>
-                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
-               <li id="burger-auth" style="grid-column: span 2;"></li>
-            </ul>
+                        <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
     <script src="/static/script.js"></script>
     <script>document.addEventListener('DOMContentLoaded', initUI);</script>
 
     <main class="ipo-container">
-        <h1 class="ipo-title">Güncel Halka Arz Takvimi (halkarz.com)</h1>
+        <h1 class="ipo-title">Güncel Halka Arz Takvimi</h1>
         <div class="ipo-detailed-list" id="halkaarz-main-list">
             <p>Yükleniyor...</p>
         </div>
@@ -61,7 +79,7 @@
                     const list = document.getElementById('halkaarz-main-list');
                     list.innerHTML = '';
                     if(!data || data.length === 0){
-                        list.innerHTML = '<p>Veri sistemden çekilemedi.</p>';
+                        list.innerHTML = '<p style="text-align:center; padding:3rem; color:var(--color-muted); font-weight:bold;">Şu an aktif veya gelecek halka arz bulunmamaktadır.</p>';
                         return;
                     }
                     data.forEach(item => {
@@ -71,8 +89,16 @@
                         card.innerHTML = `
                             <div class="ipo-card-left">
                                 <div class="ipo-company">${item.title}</div>
-                                <div class="ipo-status">Detayları İncele →</div>
+                                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                                    <span style="background: rgba(15, 118, 110, 0.1); color: #0f766e; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(15, 118, 110, 0.2);">
+                                        📅 ${item.date}
+                                    </span>
+                                    <span style="background: rgba(245, 158, 11, 0.1); color: #d97706; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                        💵 Fiyat: ${item.fiyat}
+                                    </span>
+                                </div>
                             </div>
+                            <div class="ipo-status" style="margin-top: 0;">Detaylar →</div>
                         `;
                         list.appendChild(card);
                     });

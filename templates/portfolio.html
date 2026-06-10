@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portföyüm & AI Analiz - Dubu Finance</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: #ffffff;
+            --glass-border: #e2e8f0;
+            --neon-blue: #3b82f6;
+            --neon-purple: #8b5cf6;
+        }
+
+        .portfolio-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portfolio-header-container::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%);
+            animation: rotateBg 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .portfolio-header-container > * { position: relative; z-index: 1; }
+
+        .total-value-card {
+            text-align: right;
+        }
+        .total-value-card h2 {
+            font-size: 3.5rem;
+            margin: 0;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+
+        .portfolio-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 350px; 
+            gap: 2rem; 
+            margin-bottom: 2rem; 
+        }
+        @media (max-width: 900px) { .portfolio-layout { grid-template-columns: 1fr; } }
+
+        .glass-card {
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .add-asset-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .asset-type-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .type-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            text-align: center;
+        }
+
+        .type-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: translateY(-2px);
+        }
+
+        .type-btn.active {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #6d28d9 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .portfolio-autocomplete-list {
+            position: absolute;
+            top: 105%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            border: 1px solid #cbd5e1;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .autocomplete-row {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            font-weight: 700;
+            color: #1e293b;
+            transition: 0.2s;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .autocomplete-row:hover {
+            background: rgba(139, 92, 246, 0.08);
+            color: var(--neon-purple);
+            padding-left: 1.5rem;
+        }
+
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 600; }
+        .form-group input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            padding: 1rem;
+            border-radius: 12px;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--neon-blue) 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+            font-family: 'Outfit', sans-serif;
+        }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(59, 130, 246, 0.5); }
+
+        .btn-ai {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #6d28d9 100%);
+            box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+        .btn-ai:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.5); }
+
+        .portfolio-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        .portfolio-table th { 
+            color: #94a3b8; 
+            font-weight: 600; 
+            padding: 1rem 1.5rem; 
+            text-align: left; 
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .portfolio-table td {
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .portfolio-table tr td:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-left: 1px solid var(--glass-border); }
+        .portfolio-table tr td:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-right: 1px solid var(--glass-border); }
+        .portfolio-table tr td { border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); transition: transform 0.2s; }
+        
+        .portfolio-table tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.04);
+            transform: scale(1.01);
+        }
+
+        .profit { color: #10b981; }
+        .loss { color: #ef4444; }
+        
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover { background: #ef4444; color: white; }
+
+        /* AI Optimizer Modal */
+        #ai-modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        #ai-modal.active { display: flex; }
+        .ai-modal-content {
+            background: #ffffff;
+            width: 90%; max-width: 600px;
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            color: #1e293b;
+        }
+        .loading-ring {
+            width: 80px; height: 80px;
+            border: 4px solid rgba(139, 92, 246, 0.1);
+            border-top: 4px solid var(--neon-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .ai-suggestion {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--neon-purple);
+        }
+        .risk-layout {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .risk-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Multi-Portfolio Selector */
+        .portfolio-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .portfolio-tab {
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .portfolio-tab:hover { background: #e2e8f0; transform: translateY(-1px); }
+        .portfolio-tab.active {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #6d28d9 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+        }
+        .portfolio-tab .tab-delete {
+            margin-left: 0.3rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .portfolio-tab .tab-delete:hover { opacity: 1; background: rgba(239, 68, 68, 0.8); }
+        .portfolio-add-btn {
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+        .portfolio-add-btn:hover { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(139, 92, 246, 0.05); }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
+        </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+                <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Multi-Portfolio Selector -->
+        <div class="portfolio-selector" id="portfolio-selector">
+            <!-- JS fills portfolio tabs -->
+        </div>
+
+        <div class="portfolio-header-container">
+            <div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 800;">Akıllı Varlık Yönetimi</h1>
+                <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">Yatırımlarını tek bir yerden takip et ve AI ile optimize et.</p>
+            </div>
+            <div class="total-value-card">
+                <span style="color: rgba(255, 255, 255, 0.7); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; font-weight: 700;">Net Varlık Değeri</span>
+                <h2 id="total-val">₺ 0.00</h2>
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                    <span id="total-profit-val" style="font-size: 1.2rem; font-weight: 600;">+₺0.00</span>
+                    <span id="total-profit-pct" style="padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 1rem;">+%0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="portfolio-layout">
+            <div class="glass-card" style="margin-bottom: 0;">
+                <h3 style="color: var(--color-primary); font-family:var(--font-display); margin-bottom: 1.5rem; font-size: 1.5rem;">✨ Yeni Varlık Ekle</h3>
+                <div class="add-asset-form">
+                    <!-- Step 1: Asset Type -->
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 600;">1. Varlık Türü Seçin</label>
+                        <div class="asset-type-grid">
+                            <button type="button" class="type-btn active" data-type="hisse" onclick="selectAssetType('hisse')">Hisse</button>
+                            <button type="button" class="type-btn" data-type="fon" onclick="selectAssetType('fon')">Fon</button>
+                            <button type="button" class="type-btn" data-type="gold" onclick="selectAssetType('gold')">Altın</button>
+                            <button type="button" class="type-btn" data-type="silver" onclick="selectAssetType('silver')">Gümüş</button>
+                            <button type="button" class="type-btn" data-type="nakit" onclick="selectAssetType('nakit')">Nakit</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Autocomplete Search -->
+                    <div class="form-group" style="position: relative; margin-top: 0.5rem;">
+                        <label id="search-input-label">2. Hisse Senedi Ara / Seç</label>
+                        <input type="text" id="asset-search-input" placeholder="Aramak için yazmaya başlayın..." autocomplete="off">
+                        <input type="hidden" id="asset-symbol">
+                        <div id="asset-autocomplete-list" class="portfolio-autocomplete-list" style="display: none;"></div>
+                    </div>
+
+                    <!-- Step 3: Lot & Cost (Initially Hidden) -->
+                    <div id="lot-cost-section" style="display: none; flex-direction: column; gap: 1.2rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label id="amount-label">Adet / Lot</label>
+                                <input type="number" id="asset-amount" placeholder="0.00" min="0" step="any">
+                            </div>
+                            <div class="form-group">
+                                <label>Ortalama Maliyet (₺)</label>
+                                <input type="number" id="asset-price" placeholder="0.00" min="0" step="any">
+                            </div>
+                        </div>
+                        <button class="btn-action" onclick="addToPortfolio()">Portföye Ekle</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+                <div style="width: 100%; height: 200px; position: relative;">
+                    <canvas id="portfolioPieChart"></canvas>
+                </div>
+                <button class="btn-action btn-ai" onclick="openAIOptimizer()">🧠 AI ile Portföyü Optimize Et</button>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto; padding-bottom: 2rem;">
+            <table class="portfolio-table">
+                <thead>
+                    <tr>
+                        <th>Varlık</th>
+                        <th>Adet</th>
+                        <th>Ort. Maliyet</th>
+                        <th>Güncel Fiyat</th>
+                        <th>Toplam Değer</th>
+                        <th>Kar / Zarar</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="portfolio-body">
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Portföy Sağlığı ve Maliyet Analizi Grid'i -->
+        <div class="portfolio-health-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; margin-bottom: 2rem;">
+            <!-- Çeşitlendirme Skoru (Health Score) -->
+            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem; gap: 1rem;">
+                <div>
+                    <h3 style="color: var(--color-primary); font-family:var(--font-display); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">🩺 AI Portföy Sağlığı & Çeşitlendirme Skoru</h3>
+                    <p style="color: #64748b; font-size: 0.88rem; margin: 0;">Yapay zeka portföyünüzün varlık dağılımını, risk konsantrasyonunu ve çeşitliliğini analiz eder.</p>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; margin: 1rem 0; flex-wrap: wrap;">
+                    <!-- Dairesel Progress Bar / Skor -->
+                    <div style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="120" height="120" viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+                            <circle cx="60" cy="60" r="50" fill="transparent" stroke="#e2e8f0" stroke-width="10" />
+                            <circle id="health-score-circle" cx="60" cy="60" r="50" fill="transparent" stroke="#0f766e" stroke-width="10" 
+                                    stroke-dasharray="314.16" stroke-dashoffset="314.16" style="transition: stroke-dashoffset 1s ease-out;" />
+                        </svg>
+                        <div id="health-score-text" style="position: absolute; font-size: 1.8rem; font-weight: 900; color: #1e293b;">0</div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 150px;">
+                        <div style="font-weight: 700; font-size: 1rem; color: #1e293b;" id="health-status-title">Analiz ediliyor...</div>
+                        <div style="font-size: 0.82rem; color: #475569;" id="health-status-desc">Lütfen portföyünüze varlık ekleyin.</div>
+                    </div>
+                </div>
+                
+                <div id="health-advice-box" style="background: rgba(15, 118, 110, 0.05); border: 1px solid rgba(15, 118, 110, 0.15); border-radius: 12px; padding: 1rem; font-size: 0.85rem; color: #0f766e; font-weight: 500; min-height: 50px;">
+                    Portföyünüz analiz ediliyor...
+                </div>
+
+                <div style="border-top: 1px solid rgba(148, 163, 184, 0.15); padding-top: 1rem; margin-top: 0.5rem;">
+                    <div style="font-weight: 800; font-size: 1rem; color: var(--color-primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                        <span>📊 Sektörel Varlık Dağılımı</span>
+                    </div>
+                    <div id="sector-distribution-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <p style="color:var(--color-muted); font-size:0.82rem; text-align:center;">Varlık ekledikten sonra sektörel dağılım burada listelenecektir.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Maliyet vs Güncel Değer Karşılaştırma Grafiği -->
+            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem;">
+                <div>
+                    <h3 style="color: var(--color-primary); font-family:var(--font-display); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">📊 Alış Maliyeti vs Güncel Değer</h3>
+                    <p style="color: #64748b; font-size: 0.88rem; margin-bottom: 1rem;">Varlıklarınızın toplam alış maliyeti ile güncel piyasa değerinin karşılaştırması.</p>
+                </div>
+                <div style="flex-grow: 1; height: 200px; position: relative;">
+                    <canvas id="costVsValueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Portföy Risk Simülatörü ve Projeksiyon Paneli -->
+        <div class="glass-card" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <h3 style="color: var(--color-primary); font-family:var(--font-display); font-size: 1.5rem; margin-bottom: 0.25rem;">📊 AI Beklenti</h3>
+                    <p style="color: #64748b; margin: 0; font-size: 0.95rem;">Yapay zeka algoritmalarımız ve Monte Carlo yöntemleri ile portföyünüzün gelecek vadelerdeki olası performans dağılımı analiz edilir.</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <select id="risk-period" style="padding: 0.6rem 1rem; border-radius: 12px; border: 1px solid #cbd5e1; font-family:'Outfit', sans-serif; font-weight:600; outline:none; background:#ffffff; color:#1e293b;" onchange="runRiskSimulation()">
+                        <option value="3mo">3 Ay (Kısa Vade)</option>
+                        <option value="6mo">6 Ay (Orta Vade)</option>
+                        <option value="1y" selected>1 Yıl (Uzun Vade)</option>
+                        <option value="3y">3 Yıl (Makro Projeksiyon)</option>
+                    </select>
+                    <button class="btn-action" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;" onclick="runRiskSimulation()">Simüle Et</button>
+                </div>
+            </div>
+
+            <!-- Risk Simulator Layout -->
+            <div class="risk-layout">
+                <div style="height: 350px; position: relative; background: #f8fafc; padding: 1.2rem; border-radius: 16px; border: 1px solid #cbd5e1;">
+                    <canvas id="riskSimulationChart"></canvas>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Riske Maruz Değer (VaR) -->
+                    <div style="background: rgba(239, 68, 68, 0.05); padding: 1.2rem; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                        <div style="color: #ef4444; font-size: 0.8rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">%95 Güvenle Riske Maruz Değer (VaR)</div>
+                        <div id="risk-var" style="color: #1e293b; font-size: 1.8rem; font-weight: 900; margin: 0.25rem 0;">₺ 0.00</div>
+                        <div id="risk-var-pct" style="color: #ef4444; font-size: 0.95rem; font-weight: 700;">-%0.00 (Portföy Riski)</div>
+                    </div>
+                    
+                    <!-- Senaryolar -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div style="background: rgba(16, 185, 129, 0.05); padding: 1rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.2); text-align: center;">
+                            <span style="color: #10b981; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">İyimser (%80)</span>
+                            <div id="risk-bullish" style="color: #1e293b; font-size: 1.2rem; font-weight: 800; margin-top: 0.25rem;">₺ 0.00</div>
+                        </div>
+                        <div style="background: rgba(239, 68, 68, 0.05); padding: 1rem; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.2); text-align: center;">
+                            <span style="color: #ef4444; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Kötümser (%20)</span>
+                            <div id="risk-bearish" style="color: #1e293b; font-size: 1.2rem; font-weight: 800; margin-top: 0.25rem;">₺ 0.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Beklenen Değer & Max Düşüş -->
+                    <div style="background: rgba(59, 130, 246, 0.05); padding: 1.2rem; border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.2); display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #475569; font-size: 0.9rem; font-weight: 600;">Ortalama Beklenen Değer:</span>
+                            <span id="risk-expected" style="color: #1e293b; font-weight: 800; font-size: 1rem;">₺ 0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #475569; font-size: 0.9rem; font-weight: 600;">Beklenen Ort. Max Düşüş (Drawdown):</span>
+                            <span id="risk-max-dd" style="color: #ef4444; font-weight: 800; font-size: 1rem;">-%0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Optimizer Modal -->
+    <div id="ai-modal">
+        <div class="ai-modal-content">
+            <button class="modal-close" style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: #64748b; font-size: 2rem; cursor: pointer;" onclick="document.getElementById('ai-modal').classList.remove('active')">&times;</button>
+            
+            <div id="ai-loading" style="text-align: center;">
+                <h2 style="color: #1e293b; margin-bottom: 1rem;">AI Optimizasyon Motoru Çalışıyor</h2>
+                <p style="color: #64748b;">Markowitz Etkin Sınır teorisi ve duyarlılık analizleri birleştiriliyor...</p>
+                <div class="loading-ring"></div>
+                <p id="ai-status-text" style="color: var(--neon-purple); font-weight: 600;">Piyasa verileri analiz ediliyor...</p>
+            </div>
+
+            <div id="ai-result" style="display: none;">
+                <h2 style="color: #1e293b; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-display); font-weight: 800;">
+                    <span style="font-size: 1.5rem;">✨</span> AI Portföy Optimizasyonu
+                </h2>
+                
+                <!-- Tab Buttons -->
+                <div style="display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 1.5rem; gap: 1rem;">
+                    <button id="tab-btn-dist" class="type-btn active" style="background:none; border:none; box-shadow:none; padding: 0.5rem 1rem; border-radius:0; border-bottom:3px solid var(--neon-purple); color:var(--neon-purple); font-weight:700;" onclick="switchAITab('dist')">🎯 Optimum Hedefler</button>
+                    <button id="tab-btn-rebal" class="type-btn" style="background:none; border:none; box-shadow:none; padding: 0.5rem 1rem; border-radius:0; border-bottom:3px solid transparent; color:#64748b; font-weight:700;" onclick="switchAITab('rebal')">🔄 Rebalans & İşlemler</button>
+                </div>
+                
+                <!-- Tab 1: Distribution -->
+                <div id="tab-content-dist">
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">Maksimum Sharpe Rasyosu (en yüksek risk-ayarlı getiri) için hesaplanan dağılım.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: rgba(139, 92, 246, 0.05); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(139, 92, 246, 0.2);">
+                            <div style="color: var(--neon-purple); font-size: 0.8rem; text-transform: uppercase; font-weight: bold;">Maksimum Sharpe Rasyosu</div>
+                            <div id="opt-sharpe-ratio" style="color: #1e293b; font-size: 1.8rem; font-weight: 800;">0.00</div>
+                        </div>
+                        <div style="background: rgba(139, 92, 246, 0.05); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(139, 92, 246, 0.2);">
+                            <div style="color: var(--neon-purple); font-size: 0.8rem; text-transform: uppercase; font-weight: bold;">Beklenen Yıllık Getiri</div>
+                            <div id="opt-expected-return" style="color: #1e293b; font-size: 1.8rem; font-weight: 800;">%0.00</div>
+                        </div>
+                    </div>
+
+                    <div style="margin: 1.5rem 0; background: #f8fafc; padding: 1.2rem; border-radius: 16px; border: 1px solid #cbd5e1;">
+                        <h4 style="color: #1e293b; margin-bottom: 0.75rem; font-family: var(--font-display); font-weight: bold;">📈 Markowitz Verimli Sınırı (Efficient Frontier)</h4>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="efficientFrontierChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="ai-suggestion">
+                        <h4 style="color: #1e293b; margin-bottom: 0.5rem; font-weight: bold;">Önerilen Dağılım Planı:</h4>
+                        <ul id="ai-dist-list" style="color: #475569; line-height: 1.6; padding-left: 1.2rem;">
+                            <!-- JS fill -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Tab 2: Rebalancing & Cash Simulator -->
+                <div id="tab-content-rebal" style="display: none;">
+                    <p style="color: #64748b; margin-bottom: 1.2rem;">Mevcut portföyünüzü optimum ağırlıklara eşitlemek için gereken işlemler listelenmiştir.</p>
+                    
+                    <div style="max-height: 200px; overflow-y: auto; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 1px solid #cbd5e1;">
+                                    <th style="padding: 0.75rem; color:#475569;">Varlık</th>
+                                    <th style="padding: 0.75rem; color:#475569;">Mevcut Ağırlık</th>
+                                    <th style="padding: 0.75rem; color:#475569;">Hedef Ağırlık</th>
+                                    <th style="padding: 0.75rem; color:#475569;">Önerilen İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rebalance-table-body">
+                                <!-- JS fill -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Nakit Ekleme Simülatörü -->
+                    <div style="background: #f1f5f9; padding: 1.2rem; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <h4 style="color: #1e293b; margin-bottom: 0.5rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem;">
+                            💰 Yeni Nakit Girişi Simülatörü (Satışsız Rebalans)
+                        </h4>
+                        <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 1rem;">
+                            Portföyünüze eklemek istediğiniz nakit tutarını girin. Sihirbazımız, mevcut varlıklarınızı satmadan, bu nakitle en optimum ağırlıklara yaklaşmanızı sağlayacak satın alma planını hesaplar.
+                        </p>
+                        
+                        <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;">
+                            <input type="number" id="rebal-cash-input" placeholder="Eklenecek Nakit Tutarı (₺)..." style="flex: 1; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #cbd5e1; outline:none;" min="0">
+                            <button class="btn-action" style="padding: 0.8rem 1.5rem; font-size: 0.9rem;" onclick="simulateCashAllocation()">Hesapla</button>
+                        </div>
+                        
+                        <div id="cash-alloc-result" style="display: none;">
+                            <h5 style="color: #1e293b; font-weight: 700; margin-bottom: 0.5rem;">Satın Alma Emirleri Listesi:</h5>
+                            <ul id="cash-alloc-orders" style="color: #475569; padding-left: 1.2rem; line-height: 1.6; font-size: 0.9rem;">
+                                <!-- JS fill -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        let portfolioChart = null;
+        let globalPortfolioData = [];
+        let activeAssetType = 'hisse';
+        let activePortfolioId = null;
+        let allPortfolios = [];
+        let priceRefreshInterval = null;
+
+        const histSymbols = ["THYAO", "ASELS", "EREGL", "TUPRS", "SAHOL", "KCHOL", "SISE", "AKBNK", "ISCTR", "GARAN", "YKBNK", "BIMAS", "FROTO", "SASA", "HEKTS", "PETKM", "KOZAL", "PGSUS", "TOASO", "ARCLK", "EKGYO", "DOHOL", "HALKB", "VAKBN", "KRDMD", "TCELL", "TTKOM", "ENKAI", "VESTL"];
+        const histSymbolNames = {
+            "THYAO": "Türk Hava Yolları", "ASELS": "Aselsan Elektronik", "EREGL": "Ereğli Demir Çelik",
+            "TUPRS": "Tüpraş Rafinerileri", "SAHOL": "Sabancı Holding", "KCHOL": "Koç Holding",
+            "SISE": "Şişecam", "AKBNK": "Akbank", "ISCTR": "İş Bankası C", "GARAN": "Garanti BBVA",
+            "YKBNK": "Yapı Kredi Bankası", "BIMAS": "BİM Birleşik Mağazalar", "FROTO": "Ford Otosan",
+            "SASA": "Sasa Polyester", "HEKTS": "Hektaş", "PETKM": "Petkim", "KOZAL": "Koza Altın",
+            "PGSUS": "Pegasus", "TOASO": "Tofaş Oto Fab.", "ARCLK": "Arçelik", "EKGYO": "Emlak Konut GYO",
+            "DOHOL": "Doğan Holding", "HALKB": "Halkbank", "VAKBN": "Vakıfbank", "KRDMD": "Kardemir D",
+            "TCELL": "Turkcell", "TTKOM": "Türk Telekom", "ENKAI": "Enka İnşaat", "VESTL": "Vestel"
+        };
+
+        const fundSymbols = ["MAC", "GMR", "TTE", "ST1", "TCD", "ZPE", "NNF", "IIH", "AFT", "AFS", "IPJ", "GUH", "GBG", "IPV", "TGE", "YZG", "GPA", "KRT", "TCA", "TI2", "GSP", "YAS", "TDP", "ATL", "RBK", "HVS", "OPI", "TDB", "OKP", "KBD", "ZPF", "NPU"];
+        const fundSymbolNames = {
+            "MAC": "Marmara Capital Hisse Fonu", "GMR": "Inveo Portföy Hisse Fonu",
+            "TTE": "İş Portföy BIST Teknoloji Fonu", "ST1": "Straton Hisse Senedi Fonu",
+            "TCD": "Tacirler Portföy Değişken Fon", "ZPE": "Ziraat Portföy Katılım Endeksi Fonu",
+            "NNF": "Hedef Portföy Birinci Hisse Senedi Fonu", "IIH": "İstanbul Portföy Üçüncü Hisse Senedi Fonu",
+            "AFT": "Ak Portföy Yeni Teknolojiler Fonu", "AFS": "Ak Portföy Sağlık Sektörü Fonu",
+            "IPJ": "İş Portföy Elektrikli Araçlar Fonu", "GUH": "Garanti Portföy Yabancı Teknoloji Fonu",
+            "GBG": "Garanti Portföy Amerika Yabancı Hisse Fonu", "IPV": "İş Portföy Yabancı Hisse Senedi Fonu",
+            "TGE": "İş Portföy Emtia Fonu", "YZG": "Yapı Kredi Portföy Altın Fonu",
+            "GPA": "Garanti Portföy Altın Fonu", "KRT": "Kuveyt Türk Portföy Altın Fonu",
+            "TCA": "Ziraat Portföy Altın Katılım Fonu", "TI2": "İş Portföy Hisse Senedi Fonu",
+            "GSP": "Garanti Portföy BIST 30 Endeksi Fonu", "YAS": "Yapı Kredi Portföy Koç Holding İştirak Fonu",
+            "TDP": "Tera Portföy Hisse Senedi Fonu", "ATL": "Atlas Portföy Birinci Hisse Senedi Fonu",
+            "RBK": "Re-Pie Portföy Birinci Değişken Fon", "HVS": "HSBC Portföy Hisse Senedi Fonu",
+            "OPI": "Oyak Portföy Birinci Hisse Senedi Fonu", "TDB": "TEB Portföy Borçlanma Araçları Fonu",
+            "OKP": "Oyak Portföy Birinci Değişken Fon", "KBD": "Kuveyt Türk Portföy Kira Sertifikası Fonu",
+            "ZPF": "Ziraat Portföy Borçlanma Araçları Fonu", "NPU": "Neo Portföy Birinci Hisse Senedi Fonu"
+        };
+
+        const metalSymbols = ["GRAM", "YARIM", "CEYREK", "SILVER", "PLATINUM", "PALLADIUM"];
+        const metalSymbolNames = {
+            "GRAM": "Gram Altın (₺/gr)", "YARIM": "Yarım Altın (₺/Adet)", "CEYREK": "Çeyrek Altın (₺/Adet)",
+            "SILVER": "Gümüş (₺/gr)", "PLATINUM": "Platin (₺/Ons)", "PALLADIUM": "Paladyum (₺/Ons)"
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            loadPortfolioTabs().then(() => {
+                loadPortfolio();
+            });
+            setupPortfolioSearch();
+            selectAssetType('hisse');
+            document.getElementById('asset-amount').addEventListener('input', updateAverageCost);
+            // Real-time price refresh every 5 seconds
+            priceRefreshInterval = setInterval(() => {
+                if (globalPortfolioData.length > 0) {
+                    loadPortfolio(true); // silent refresh
+                }
+            }, 5000);
+        });
+
+        function updateAverageCost() {
+            if (activeAssetType === 'nakit') {
+                return;
+            }
+            const amountInput = document.getElementById('asset-amount');
+            const priceInput = document.getElementById('asset-price');
+            const amount = parseFloat(amountInput.value) || 0;
+            const currentPrice = window.selectedAssetCurrentPrice || 0;
+            if (currentPrice > 0 && amount > 0) {
+                priceInput.value = (currentPrice * amount).toFixed(2);
+            }
+        }
+
+        function selectAssetType(type) {
+            activeAssetType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+
+            const searchInput = document.getElementById('asset-search-input');
+            const symbolInput = document.getElementById('asset-symbol');
+            const priceInput = document.getElementById('asset-price');
+            const amountLabel = document.getElementById('amount-label');
+            const amountInput = document.getElementById('asset-amount');
+            
+            searchInput.value = '';
+            symbolInput.value = '';
+            priceInput.value = '';
+            priceInput.placeholder = '0.00';
+            priceInput.parentElement.querySelector('label').innerText = 'Ortalama Maliyet (₺)';
+            priceInput.readOnly = false;
+            searchInput.readOnly = false;
+            amountInput.parentElement.style.display = '';
+            amountInput.value = '';
+
+            document.getElementById('lot-cost-section').style.display = 'none';
+            document.getElementById('asset-autocomplete-list').style.display = 'none';
+
+            const label = document.getElementById('search-input-label');
+            if (type === 'hisse') {
+                label.innerText = '2. Hisse Senedi Ara / Seç';
+                searchInput.placeholder = 'Hisse kodu veya adı yazın (Örn: THYAO)...';
+                amountLabel.innerText = 'Adet / Lot';
+            } else if (type === 'fon') {
+                label.innerText = '2. Yatırım Fonu Ara / Seç';
+                searchInput.placeholder = 'Fon kodu veya adı yazın (Örn: MAC)...';
+                amountLabel.innerText = 'Adet / Lot';
+            } else if (type === 'gold') {
+                label.innerText = '2. Altın Türü Seçin';
+                searchInput.placeholder = 'Altın yazmaya başlayın (Örn: Gram Altın)...';
+                amountLabel.innerText = 'Gram / Adet';
+            } else if (type === 'silver') {
+                label.innerText = '2. Gümüş Seçin';
+                searchInput.placeholder = 'Gümüş yazmaya başlayın...';
+                amountLabel.innerText = 'Gram';
+                
+                // Directly select SILVER!
+                searchInput.value = 'SILVER - Gümüş (₺/gr)';
+                symbolInput.value = 'SILVER';
+                document.getElementById('lot-cost-section').style.display = 'flex';
+                document.getElementById('asset-amount').focus();
+                
+                fetchCurrentPrice('SILVER').then(price => {
+                    window.selectedAssetCurrentPrice = price;
+                    updateAverageCost();
+                });
+            } else if (type === 'nakit') {
+                label.innerText = '2. Nakit Girişi';
+                searchInput.value = 'NAKİT - Türk Lirası (₺)';
+                searchInput.readOnly = true;
+                symbolInput.value = 'TRY';
+                document.getElementById('lot-cost-section').style.display = 'flex';
+                // Hide the amount/lot field for cash — only show tutar
+                amountInput.parentElement.style.display = 'none';
+                priceInput.value = '';
+                priceInput.readOnly = false;
+                priceInput.parentElement.querySelector('label').innerText = 'Tutar (₺)';
+                priceInput.placeholder = 'Örn: 10000';
+                window.selectedAssetCurrentPrice = 1.00;
+            }
+        }
+
+        function setupPortfolioSearch() {
+            const input = document.getElementById('asset-search-input');
+            const list = document.getElementById('asset-autocomplete-list');
+
+            input.onfocus = () => showFilteredSuggestions(input.value);
+            input.oninput = (e) => showFilteredSuggestions(e.target.value);
+
+            function showFilteredSuggestions(val) {
+                const q = val.toUpperCase().trim();
+                let filtered = [];
+                let names = {};
+
+                if (activeAssetType === 'hisse') {
+                    filtered = histSymbols.filter(s => s.includes(q) || histSymbolNames[s].toUpperCase().includes(q));
+                    names = histSymbolNames;
+                } else if (activeAssetType === 'fon') {
+                    filtered = fundSymbols.filter(s => s.includes(q) || fundSymbolNames[s].toUpperCase().includes(q));
+                    names = fundSymbolNames;
+                } else if (activeAssetType === 'gold') {
+                    const golds = ["GRAM", "YARIM", "CEYREK"];
+                    filtered = golds.filter(s => s.includes(q) || metalSymbolNames[s].toUpperCase().includes(q));
+                    names = metalSymbolNames;
+                } else if (activeAssetType === 'silver') {
+                    const silvers = ["SILVER"];
+                    filtered = silvers.filter(s => s.includes(q) || metalSymbolNames[s].toUpperCase().includes(q));
+                    names = metalSymbolNames;
+                }
+
+                list.innerHTML = '';
+                if (filtered.length > 0) {
+                    filtered.forEach(s => {
+                        const row = document.createElement('div');
+                        row.className = 'autocomplete-row';
+                        row.innerHTML = `
+                            <span style="color:var(--color-primary); font-weight:900;">${s}</span>
+                            <span style="font-size:0.8rem; color:#64748b; font-weight:500;">${names[s]}</span>
+                        `;
+                        row.onclick = async () => {
+                            input.value = `${s} - ${names[s]}`;
+                            document.getElementById('asset-symbol').value = s;
+                            list.style.display = 'none';
+                            
+                            // Show step 3 (lot and cost fields)
+                            document.getElementById('lot-cost-section').style.display = 'flex';
+                            document.getElementById('asset-amount').focus();
+                            
+                            try {
+                                const price = await fetchCurrentPrice(s);
+                                window.selectedAssetCurrentPrice = price;
+                                updateAverageCost();
+                            } catch(e) {}
+                        };
+                        list.appendChild(row);
+                    });
+                    list.style.display = 'block';
+                } else {
+                    list.style.display = 'none';
+                }
+            }
+
+            document.addEventListener('click', (e) => {
+                if(!input.contains(e.target) && !list.contains(e.target)) {
+                    list.style.display = 'none';
+                }
+            });
+        }
+
+        async function loadPortfolio(silent = false) {
+            const pidParam = activePortfolioId ? `?portfolio_id=${activePortfolioId}` : '';
+            const resp = await fetch(`/api/portfolio${pidParam}`);
+            const data = await resp.json();
+            globalPortfolioData = data;
+            
+            const body = document.getElementById('portfolio-body');
+            body.innerHTML = '';
+            
+            if(data.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 3rem; color: #94a3b8;">Portföyünüzde henüz varlık bulunmuyor.</td></tr>';
+                document.getElementById('total-val').innerText = '₺ 0.00';
+                updatePieChart([], []);
+                updateCostVsValueChart([], [], []);
+                updateHealthScore([], [], []);
+                return;
+            }
+
+            let totalVal = 0;
+            let totalCost = 0;
+            const grouped = {};
+
+            for (const item of data) {
+                const currentPrice = await fetchCurrentPrice(item.symbol);
+                const currentVal = item.amount * currentPrice;
+                const cost = item.amount * item.buy_price;
+                const profit = currentVal - cost;
+                const profitPct = cost > 0 ? (profit / cost) * 100 : 0;
+
+                totalVal += currentVal;
+                totalCost += cost;
+                
+                if (!grouped[item.symbol]) {
+                    grouped[item.symbol] = { val: 0, cost: 0 };
+                }
+                if (currentVal > 0) {
+                    grouped[item.symbol].val += currentVal;
+                    grouped[item.symbol].cost += cost;
+                }
+
+                body.innerHTML += `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 800; font-size: 1.1rem; color: #1e293b;">${item.symbol}</div>
+                        </td>
+                        <td style="font-weight: 600; color: #475569;">${item.amount.toLocaleString('tr-TR')}</td>
+                        <td style="color: #64748b;">₺ ${item.buy_price.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="font-weight: 600; color: #1e293b;">₺ ${currentPrice.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="font-weight: 800; color: #1e293b; font-size: 1.1rem;">₺ ${currentVal.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="font-weight: 800;">
+                            <div style="color: ${profit >= 0 ? '#10b981' : '#ef4444'}">
+                                ${profit >= 0 ? '+' : ''}₺ ${profit.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </div>
+                            <div style="font-size: 0.85rem; color: ${profit >= 0 ? '#10b981' : '#ef4444'}; opacity: 0.8;">
+                                ${profit >= 0 ? '+' : ''}${profitPct.toFixed(2)}%
+                            </div>
+                        </td>
+                        <td><button class="delete-btn" onclick="deleteItem(${item.id})">Kaldır</button></td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('total-val').innerText = `₺ ${totalVal.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            
+            const totalProfit = totalVal - totalCost;
+            const totalProfitPct = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
+            const profitValEl = document.getElementById('total-profit-val');
+            profitValEl.innerText = `${totalProfit >= 0 ? '+' : ''}₺${totalProfit.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            profitValEl.style.color = totalProfit >= 0 ? '#10b981' : '#ef4444';
+
+            const profitPctEl = document.getElementById('total-profit-pct');
+            profitPctEl.innerText = `${totalProfitPct >= 0 ? '+' : ''}${totalProfitPct.toFixed(2)}%`;
+            profitPctEl.style.backgroundColor = totalProfitPct >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+            profitPctEl.style.color = totalProfitPct >= 0 ? '#10b981' : '#ef4444';
+            
+            const chartLabels = [];
+            const chartData = [];
+            const costData = [];
+            Object.keys(grouped).forEach(sym => {
+                if (grouped[sym].val > 0) {
+                    chartLabels.push(sym);
+                    chartData.push(grouped[sym].val);
+                    costData.push(grouped[sym].cost);
+                }
+            });
+            
+            updatePieChart(chartLabels, chartData);
+            updateCostVsValueChart(chartLabels, costData, chartData);
+            updateHealthScore(data, chartLabels, chartData);
+            runRiskSimulation();
+        }
+        
+        function updatePieChart(labels, data) {
+            const ctx = document.getElementById('portfolioPieChart').getContext('2d');
+            if (portfolioChart) portfolioChart.destroy();
+            
+            if (data.length === 0 || data.every(d => d === 0)) {
+                portfolioChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: ['Boş'], datasets: [{ data: [1], backgroundColor: ['rgba(0,0,0,0.05)'] }] },
+                    options: { plugins: { tooltip: { enabled: false }, legend: { display: false } }, maintainAspectRatio: false, cutout: '75%', borderJoinStyle: 'round' }
+                });
+                return;
+            }
+
+            const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#14b8a6', '#0ea5e9'];
+            
+            portfolioChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#475569', boxWidth: 12, padding: 15, font: { family: 'Outfit', size: 12 } } }
+                    }
+                }
+            });
+        }
+
+        let costValueChartInstance = null;
+        function updateCostVsValueChart(labels, costs, values) {
+            const canvas = document.getElementById('costVsValueChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (costValueChartInstance) costValueChartInstance.destroy();
+            
+            if (labels.length === 0) {
+                return;
+            }
+            
+            costValueChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Alış Maliyeti',
+                            data: costs,
+                            backgroundColor: '#94a3b8',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Güncel Değer',
+                            data: values,
+                            backgroundColor: '#0f766e',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.04)' },
+                            ticks: {
+                                callback: function(value) { return '₺' + value.toLocaleString('tr-TR'); },
+                                font: { family: 'Outfit', size: 10 }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Outfit', size: 11, weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { family: 'Outfit', size: 11, weight: 'bold' }, boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ₺ ${context.raw.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getAssetSector(symbol) {
+            const sym = symbol.toUpperCase().trim();
+            
+            // Nakit & Mevduat
+            if (['TRY', 'USD', 'EUR', 'GBP', 'NAKIT', 'CASH'].some(s => sym.includes(s))) {
+                return { name: 'Nakit & Mevduat', icon: '💵', color: '#64748b' };
+            }
+            
+            // Kıymetli Madenler
+            if (['GOLD', 'ALTIN', 'SILVER', 'GUMUS', 'GÜMÜŞ', 'PLATIN', 'ONS'].some(s => sym.includes(s))) {
+                return { name: 'Kıymetli Madenler', icon: '🪙', color: '#d97706' };
+            }
+            
+            // Teknoloji & Savunma
+            if (['ASELS', 'SDTTR', 'MIATK', 'REEDER', 'YEOTK', 'TTE', 'YAZ', 'ICZ', 'KRY', 'DVT'].some(s => sym.includes(s))) {
+                return { name: 'Teknoloji & Savunma', icon: '💻', color: '#3b82f6' };
+            }
+            
+            // Enerji
+            if (['ENJSA', 'ASTOR', 'KONYE', 'CWENE', 'ALFAS', 'AHE', 'GMR', 'EUPWR', 'ODAS', 'SMRTG'].some(s => sym.includes(s))) {
+                return { name: 'Enerji', icon: '⚡', color: '#10b981' };
+            }
+            
+            // Sağlık & İlaç
+            if (['ECILC', 'DEVA', 'RTALB', 'TRILC', 'SELEC', 'MEDTR', 'EGEPO', 'GENIL'].some(s => sym.includes(s))) {
+                return { name: 'Sağlık & İlaç', icon: '🏥', color: '#ec4899' };
+            }
+            
+            // Finans & Holding
+            if (['GARAN', 'AKBNK', 'ISCTR', 'YKBNK', 'KCHOL', 'SAHOL', 'HALKB', 'VAKBN', 'ALARK', 'DOHOL'].some(s => sym.includes(s))) {
+                return { name: 'Finans & Holding', icon: '🏢', color: '#8b5cf6' };
+            }
+            
+            // Sanayi, Emtia & Ulaşım
+            if (['THYAO', 'PGSUS', 'EREGL', 'KRDMD', 'TUPRS', 'SISE', 'KARDM', 'TOASO', 'FROTO', 'HEKTS', 'SASA'].some(s => sym.includes(s))) {
+                return { name: 'Sanayi, Emtia & Ulaşım', icon: '🏗️', color: '#ea580c' };
+            }
+            
+            return { name: 'Diğer Yatırımlar', icon: '📊', color: '#14b8a6' };
+        }
+
+        function updateHealthScore(data, labels, values) {
+            const circle = document.getElementById('health-score-circle');
+            const text = document.getElementById('health-score-text');
+            const title = document.getElementById('health-status-title');
+            const desc = document.getElementById('health-status-desc');
+            const advice = document.getElementById('health-advice-box');
+            const sectorList = document.getElementById('sector-distribution-list');
+            
+            if (!circle || !text || !title || !desc || !advice) return;
+            
+            if (data.length === 0) {
+                circle.style.strokeDashoffset = 314.16;
+                text.innerText = '0';
+                title.innerText = 'Veri Bekleniyor';
+                title.style.color = '#1e293b';
+                desc.innerText = 'Portföyünüzü analiz etmek için varlık ekleyin.';
+                advice.innerText = 'Varlık ekleyerek riskinizi dağıtabilir ve AI önerilerimizi inceleyebilirsiniz.';
+                if (sectorList) {
+                    sectorList.innerHTML = '<p style="color:var(--color-muted); font-size:0.82rem; text-align:center;">Varlık ekledikten sonra sektörel dağılım burada listelenecektir.</p>';
+                }
+                return;
+            }
+            
+            let total = values.reduce((a, b) => a + b, 0);
+            if (total === 0) {
+                circle.style.strokeDashoffset = 314.16;
+                text.innerText = '0';
+                title.innerText = 'Veri Bekleniyor';
+                title.style.color = '#1e293b';
+                desc.innerText = 'Sıfır değerli portföy.';
+                advice.innerText = 'Portföyünüzün toplam değeri sıfır görünüyor. Lütfen geçerli bir varlık ekleyin.';
+                if (sectorList) {
+                    sectorList.innerHTML = '<p style="color:var(--color-muted); font-size:0.82rem; text-align:center;">Sıfır değerli portföy dağılımı.</p>';
+                }
+                return;
+            }
+            
+            // Calculate number of unique assets
+            let uniqueCount = new Set(labels).size;
+            
+            // Calculate maximum weight of a single asset
+            let maxWeight = 0;
+            labels.forEach((l, idx) => {
+                let w = (values[idx] / total) * 100;
+                if (w > maxWeight) maxWeight = w;
+            });
+            
+            // Sektörel Dağılım Hesaplama
+            const sectorSums = {};
+            labels.forEach((label, idx) => {
+                const sector = getAssetSector(label);
+                const val = values[idx];
+                if (!sectorSums[sector.name]) {
+                    sectorSums[sector.name] = {
+                        val: 0,
+                        icon: sector.icon,
+                        color: sector.color
+                    };
+                }
+                sectorSums[sector.name].val += val;
+            });
+
+            // Sektörleri büyüklüğüne göre sırala
+            const sortedSectors = Object.keys(sectorSums)
+                .map(name => ({ name, ...sectorSums[name] }))
+                .sort((a, b) => b.val - a.val);
+
+            // Sektörel Dağılım Arayüzünü Güncelle
+            if (sectorList) {
+                sectorList.innerHTML = sortedSectors.map(s => {
+                    const pct = total > 0 ? (s.val / total) * 100 : 0;
+                    return `
+                        <div class="sector-bar-row" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700;">
+                                <span style="color: var(--color-text); display: flex; align-items: center; gap: 0.3rem;">
+                                    <span>${s.icon}</span> <span>${s.name}</span>
+                                </span>
+                                <span style="color: var(--color-muted);">₺ ${s.val.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (%${pct.toFixed(1)})</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: rgba(148, 163, 184, 0.15); border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${pct}%; height: 100%; background: ${s.color}; border-radius: 4px; transition: width 0.8s ease-out;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Sektörel yoğunlaşma riski kontrolü
+            let maxSectorName = '';
+            let maxSectorPct = 0;
+            sortedSectors.forEach(s => {
+                const pct = (s.val / total) * 100;
+                if (pct > maxSectorPct) {
+                    maxSectorPct = pct;
+                    maxSectorName = s.name;
+                }
+            });
+
+            // Core score based on asset counts
+            let score = 30;
+            if (uniqueCount === 2) score = 55;
+            else if (uniqueCount === 3) score = 75;
+            else if (uniqueCount >= 4) score = 90;
+            
+            // Deduct points for excessive concentration (if max weight > 50%)
+            if (maxWeight > 50) {
+                let deduction = Math.min(25, (maxWeight - 50) * 0.5);
+                score -= deduction;
+            }
+
+            // Sektörel yoğunlaşma cezası
+            if (maxSectorPct > 50) {
+                let sectorDeduction = Math.min(20, (maxSectorPct - 50) * 0.4);
+                score -= sectorDeduction;
+            }
+            
+            // Adjust score limits
+            score = Math.max(15, Math.min(100, Math.round(score)));
+            
+            // Animate Circle DashOffset
+            // Circumference of r=50 circle is 2 * pi * 50 = 314.16
+            let offset = 314.16 - (314.16 * score / 100);
+            circle.style.strokeDashoffset = offset;
+            text.innerText = score;
+            
+            // Update UI feedback depending on score
+            if (score >= 80) {
+                circle.style.stroke = '#10b981'; // Green
+                title.innerText = 'Mükemmel Çeşitlendirme 🌟';
+                title.style.color = '#10b981';
+                desc.innerText = 'Portföyünüz çok dengeli dağılmış ve riskiniz minimize edilmiş.';
+                advice.innerText = 'Yapay Zeka Raporu: Portföy rasyolarınız ideal seviyede. Mevcut dağılımı koruyarak piyasa getirisini güvenli bir şekilde takip edebilirsiniz.';
+            } else if (score >= 50) {
+                circle.style.stroke = '#f59e0b'; // Amber
+                title.innerText = 'Dengeli Portföy ⚖️';
+                title.style.color = '#f59e0b';
+                desc.innerText = 'Dağılım fena değil ancak yoğunlaşma riski bulunuyor.';
+                if (maxSectorPct > 50) {
+                    advice.innerText = `Yapay Zeka Raporu: Sektörel yoğunlaşma tespit edildi. ${maxSectorName} sektörü portföyünüzün %${maxSectorPct.toFixed(1)}'ini kaplıyor. Riski azaltmak için bu sektörü kısmen azaltıp diğer sektörlere (örn: Kıymetli Madenler veya Enerji) yatırım yapmayı düşünebilirsiniz.`;
+                } else {
+                    advice.innerText = `Yapay Zeka Raporu: En büyük varlığınız portföyün %${maxWeight.toFixed(1)}'ini oluşturuyor. Riski azaltmak için bu varlığı kısmen azaltarak diğer sınıflara (Fon, Altın, Nakit vb.) dağıtabilirsiniz.`;
+                }
+            } else {
+                circle.style.stroke = '#ef4444'; // Red
+                title.innerText = 'Yüksek Risk Konsantrasyonu ⚠️';
+                title.style.color = '#ef4444';
+                desc.innerText = 'Portföyünüzde çok az çeşitlilik var veya tek bir varlığa ya da sektöre aşırı bağımlısınız.';
+                if (maxSectorPct > 50) {
+                    advice.innerText = `Yapay Zeka Raporu: Kritik konsantrasyon riski! Portföyünüzün %${maxSectorPct.toFixed(1)}'i sadece ${maxSectorName} sektörüne bağlı. Sektörel bir krizde tüm sermayenizi tehlikeye atmamak için portföyünüzü çeşitlendirmenizi şiddetle öneririz.`;
+                } else {
+                    advice.innerText = 'Yapay Zeka Raporu: Tek bir varlık sınıfındaki şoklar tüm sermayenizi eritebilir. Lütfen hemen "AI ile Portföyü Optimize Et" butonuna tıklayarak veya AI Danışmanından destek alarak dağılımı zenginleştirin.';
+                }
+            }
+        }
+
+        async function fetchCurrentPrice(symbol) {
+            try {
+                const r = await fetch(`/api/chart/${symbol}?period=1mo`);
+                const d = await r.json();
+                return d.current_price || 0;
+            } catch { return 0; }
+        }
+
+        async function addToPortfolio() {
+            const symbol = document.getElementById('asset-symbol').value.toUpperCase();
+            let amount = document.getElementById('asset-amount').value;
+            let price = document.getElementById('asset-price').value;
+
+            // For nakit: amount = price value, price = 1
+            if (activeAssetType === 'nakit') {
+                if (!price || parseFloat(price) <= 0) return alert('Lütfen geçerli bir tutar girin.');
+                amount = parseFloat(price); // The tutar IS the amount
+                price = 1.0; // unit price is 1.0
+            }
+
+            if(!symbol || !amount || !price) return alert("Lütfen tüm alanları doldurun.");
+
+            const resp = await fetch('/api/portfolio/add', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({symbol, amount, buy_price: price, portfolio_id: activePortfolioId})
+            });
+
+            if(resp.ok) {
+                document.getElementById('asset-symbol').value = '';
+                document.getElementById('asset-search-input').value = '';
+                document.getElementById('asset-amount').value = '';
+                document.getElementById('asset-price').value = '';
+                document.getElementById('lot-cost-section').style.display = 'none';
+                // Reset nakit label
+                document.querySelector('#lot-cost-section .form-group:last-child label').innerText = 'Ortalama Maliyet (₺)';
+                loadPortfolio();
+            } else {
+                alert("Eklenirken bir hata oluştu veya giriş yapmadınız.");
+            }
+        }
+
+        async function deleteItem(id) {
+            if(!confirm("Bu varlığı portföyünüzden kaldırmak istediğinize emin misiniz?")) return;
+            const resp = await fetch(`/api/portfolio/delete/${id}`, {method: 'DELETE'});
+            if(resp.ok) loadPortfolio();
+        }
+
+        let globalOptimizationData = null;
+
+        function switchAITab(tab) {
+            document.getElementById('tab-content-dist').style.display = tab === 'dist' ? 'block' : 'none';
+            document.getElementById('tab-content-rebal').style.display = tab === 'rebal' ? 'block' : 'none';
+            
+            const btnDist = document.getElementById('tab-btn-dist');
+            const btnRebal = document.getElementById('tab-btn-rebal');
+            
+            if (tab === 'dist') {
+                btnDist.classList.add('active');
+                btnDist.style.borderBottom = '3px solid var(--neon-purple)';
+                btnDist.style.color = 'var(--neon-purple)';
+                btnRebal.classList.remove('active');
+                btnRebal.style.borderBottom = '3px solid transparent';
+                btnRebal.style.color = '#64748b';
+            } else {
+                btnRebal.classList.add('active');
+                btnRebal.style.borderBottom = '3px solid var(--neon-purple)';
+                btnRebal.style.color = 'var(--neon-purple)';
+                btnDist.classList.remove('active');
+                btnDist.style.borderBottom = '3px solid transparent';
+                btnDist.style.color = '#64748b';
+            }
+        }
+
+        async function openAIOptimizer() {
+            if (globalPortfolioData.length < 2) {
+                alert("Optimizasyon için portföyünüzde en az 2 varlık bulunmalıdır.");
+                return;
+            }
+
+            const modal = document.getElementById('ai-modal');
+            const loading = document.getElementById('ai-loading');
+            const result = document.getElementById('ai-result');
+            const statusTxt = document.getElementById('ai-status-text');
+            
+            modal.classList.add('active');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            statusTxt.innerText = "Markowitz Optimizasyonu için geçmiş veriler (1 Yıl) indiriliyor ve korelasyonlar hesaplanıyor...";
+
+            try {
+            const resp = await fetch('/api/optimize_portfolio' + (activePortfolioId ? `?portfolio_id=${activePortfolioId}` : ''));
+                const resData = await resp.json();
+                
+                loading.style.display = 'none';
+                
+                if(resData.error) {
+                    alert(resData.error);
+                    modal.classList.remove('active');
+                    return;
+                }
+                
+                globalOptimizationData = resData;
+                
+                document.getElementById('opt-sharpe-ratio').innerText = resData.sharpe_ratio;
+                document.getElementById('opt-expected-return').innerText = `%${resData.expected_return}`;
+                
+                let distList = '';
+                resData.distribution.forEach(d => {
+                    distList += `<li><b>${d.symbol}</b>: Mevcut ağırlık %${d.current_weight.toFixed(2)} -> Hedef ağırlık <span style="color:#10b981">%${d.optimal_weight.toFixed(2)}</span></li>`;
+                });
+                document.getElementById('ai-dist-list').innerHTML = distList;
+                
+                const rebalBody = document.getElementById('rebalance-table-body');
+                rebalBody.innerHTML = '';
+                
+                let totalCurrentVal = 0;
+                resData.distribution.forEach(d => {
+                    totalCurrentVal += d.amount * d.current_price;
+                });
+                
+                resData.distribution.forEach(d => {
+                    const targetVal = (d.optimal_weight / 100) * totalCurrentVal;
+                    const diffVal = targetVal - (d.amount * d.current_price);
+                    const diffAmount = d.current_price > 0 ? (diffVal / d.current_price) : 0;
+                    
+                    let actionText = '';
+                    let actionColor = '';
+                    
+                    if (Math.abs(diffVal) < 1.0) {
+                        actionText = 'Dengeli (İşlem yok)';
+                        actionColor = '#64748b';
+                    } else if (diffVal > 0) {
+                        actionText = `AL: +${diffAmount.toLocaleString('tr-TR', {maximumFractionDigits:2})} adet (₺ ${diffVal.toLocaleString('tr-TR', {maximumFractionDigits:2})})`;
+                        actionColor = '#10b981';
+                    } else {
+                        actionText = `SAT: ${Math.abs(diffAmount).toLocaleString('tr-TR', {maximumFractionDigits:2})} adet (₺ ${Math.abs(diffVal).toLocaleString('tr-TR', {maximumFractionDigits:2})})`;
+                        actionColor = '#ef4444';
+                    }
+                    
+                    rebalBody.innerHTML += `
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem; font-weight: 700;">${d.symbol}</td>
+                            <td style="padding: 0.75rem; color:#475569;">%${d.current_weight.toFixed(2)}</td>
+                            <td style="padding: 0.75rem; color:#1e293b; font-weight:600;">%${d.optimal_weight.toFixed(2)}</td>
+                            <td style="padding: 0.75rem; font-weight: 700; color: ${actionColor};">${actionText}</td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('rebal-cash-input').value = '';
+                document.getElementById('cash-alloc-result').style.display = 'none';
+                
+                switchAITab('dist');
+                result.style.display = 'block';
+
+                setTimeout(() => {
+                    const canvas = document.getElementById('efficientFrontierChart');
+                    if(!canvas) return;
+                    new Chart(canvas.getContext('2d'), {
+                        type: 'scatter',
+                        data: {
+                            datasets: [
+                                {
+                                    label: 'Simüle Edilen Portföyler',
+                                    data: resData.scatter_points,
+                                    backgroundColor: 'rgba(139, 92, 246, 0.45)',
+                                    pointRadius: 4,
+                                    hoverRadius: 6
+                                },
+                                {
+                                    label: 'Optimum Portföy (Sharpe)',
+                                    data: [resData.optimal_point],
+                                    backgroundColor: '#10b981',
+                                    borderColor: '#fff',
+                                    borderWidth: 2,
+                                    pointRadius: 10,
+                                    pointStyle: 'rectRot'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#475569', font: { family: 'Outfit', weight: 'bold' } }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    title: { display: true, text: 'Risk (Yıllık Volatilite %)', color: '#475569' },
+                                    ticks: { color: '#475569' },
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                },
+                                y: {
+                                    title: { display: true, text: 'Beklenen Getiri %', color: '#475569' },
+                                    ticks: { color: '#475569' },
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                }
+                            }
+                        }
+                    });
+                }, 100);
+
+            } catch(e) {
+                loading.style.display = 'none';
+                alert("Veri analiz edilemedi. (" + e + ")");
+                modal.classList.remove('active');
+            }
+        }
+
+        function simulateCashAllocation() {
+            if (!globalOptimizationData) return;
+            const newCash = parseFloat(document.getElementById('rebal-cash-input').value) || 0;
+            if (newCash <= 0) {
+                alert("Lütfen geçerli bir tutar girin.");
+                return;
+            }
+            
+            const results = calculateFreshCashAllocation(newCash, globalOptimizationData.distribution);
+            const ordersList = document.getElementById('cash-alloc-orders');
+            ordersList.innerHTML = '';
+            
+            let ordersFound = false;
+            results.forEach(alloc => {
+                if (alloc.addedVal > 0.01) {
+                    ordersFound = true;
+                    ordersList.innerHTML += `
+                        <li style="margin-bottom:0.4rem;">
+                            <b>${alloc.symbol}</b> satın alın: 
+                            <span style="color:#10b981; font-weight:700;">+${alloc.addedAmount.toLocaleString('tr-TR', {maximumFractionDigits: 2})} lot</span> 
+                            (Maliyet: ₺ ${alloc.addedVal.toLocaleString('tr-TR', {maximumFractionDigits: 2})}, Cari Fiyat: ₺ ${alloc.price.toLocaleString('tr-TR', {minimumFractionDigits: 2})})
+                        </li>
+                    `;
+                }
+            });
+            
+            if (!ordersFound) {
+                ordersList.innerHTML = '<li>Nakit tahsisi yapılamadı (tüm varlıklar hedeflenen optimum oranın üzerinde).</li>';
+            }
+            
+            document.getElementById('cash-alloc-result').style.display = 'block';
+        }
+
+        function calculateFreshCashAllocation(newCash, distribution) {
+            let totalVal = 0;
+            distribution.forEach(d => {
+                totalVal += d.amount * d.current_price;
+            });
+            
+            let newTotalVal = totalVal + newCash;
+            
+            let currentAllocations = distribution.map(d => ({
+                symbol: d.symbol,
+                price: d.current_price,
+                currentAmount: d.amount,
+                currentVal: d.amount * d.current_price,
+                targetWeight: d.optimal_weight / 100,
+                targetVal: (d.optimal_weight / 100) * newTotalVal,
+                addedVal: 0,
+                addedAmount: 0
+            }));
+            
+            let steps = 1000;
+            let cashStep = newCash / steps;
+            
+            for (let s = 0; s < steps; s++) {
+                let bestIndex = -1;
+                let maxGap = -Infinity;
+                
+                for (let i = 0; i < currentAllocations.length; i++) {
+                    let gap = currentAllocations[i].targetVal - (currentAllocations[i].currentVal + currentAllocations[i].addedVal);
+                    if (gap > maxGap) {
+                        maxGap = gap;
+                        bestIndex = i;
+                    }
+                }
+                
+                if (bestIndex !== -1) {
+                    currentAllocations[bestIndex].addedVal += cashStep;
+                }
+            }
+            
+            currentAllocations.forEach(alloc => {
+                alloc.addedAmount = alloc.price > 0 ? (alloc.addedVal / alloc.price) : 0;
+            });
+            
+            return currentAllocations;
+        }
+
+        let riskChart = null;
+        async function runRiskSimulation() {
+            if (globalPortfolioData.length === 0) {
+                return;
+            }
+            
+            const period = document.getElementById('risk-period').value;
+            const chartCanvas = document.getElementById('riskSimulationChart');
+            if (!chartCanvas) return;
+            
+            const ctx = chartCanvas.getContext('2d');
+            if (riskChart) riskChart.destroy();
+            
+            try {
+                const resp = await fetch(`/api/portfolio/risk_simulation?period=${period}` + (activePortfolioId ? `&portfolio_id=${activePortfolioId}` : ''));
+                const data = await resp.json();
+                
+                if (data.error) {
+                    return;
+                }
+                
+                document.getElementById('risk-var').innerText = `₺ ${data.var_95.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('risk-var-pct').innerText = `-${data.var_pct.toFixed(2)}% (Portföy Riski)`;
+                document.getElementById('risk-bullish').innerText = `₺ ${data.bullish.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('risk-bearish').innerText = `₺ ${data.bearish.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('risk-expected').innerText = `₺ ${data.expected_final.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('risk-max-dd').innerText = `-%${data.avg_max_dd.toFixed(2)}`;
+                
+                const datasets = [];
+                data.paths.forEach((path, idx) => {
+                    datasets.push({
+                        label: `Simülasyon ${idx+1}`,
+                        data: path,
+                        borderColor: 'rgba(59, 130, 246, 0.06)',
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.1
+                    });
+                });
+                
+                const pathLen = data.paths[0].length;
+                const medianPath = [];
+                for (let d = 0; d < pathLen; d++) {
+                    let sum = 0;
+                    data.paths.forEach(p => sum += p[d]);
+                    medianPath.push(sum / data.paths.length);
+                }
+                
+                datasets.push({
+                    label: 'Beklenen Ortalama Yol',
+                    data: medianPath,
+                    borderColor: '#8b5cf6',
+                    borderWidth: 3.5,
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.1
+                });
+                
+                const baseline = Array(pathLen).fill(data.initial_value);
+                datasets.push({
+                    label: 'Başlangıç Değeri',
+                    data: baseline,
+                    borderColor: '#cbd5e1',
+                    borderWidth: 1.5,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                });
+                
+                riskChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Bugün', ...data.future_dates],
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: {
+                                    filter: (item) => item.text === 'Beklenen Ortalama Yol' || item.text === 'Başlangıç Değeri',
+                                    color: '#475569',
+                                    font: { family: 'Outfit', weight: 'bold' }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ₺ ${context.raw.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#475569', maxTicksLimit: 10 },
+                                grid: { color: 'rgba(0,0,0,0.03)' }
+                            },
+                            y: {
+                                ticks: { color: '#475569' },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            }
+                        }
+                    }
+                });
+} catch(e) {
+                console.error("Risk simülasyonu başarısız: ", e);
+            }
+        }
+        // ============ MULTI-PORTFOLIO MANAGEMENT ============
+        async function loadPortfolioTabs() {
+            try {
+                const resp = await fetch('/api/portfolios');
+                allPortfolios = await resp.json();
+            } catch(e) { allPortfolios = []; }
+            
+            if (allPortfolios.length === 0) return;
+            if (!activePortfolioId) activePortfolioId = allPortfolios[0].id;
+            
+            renderPortfolioTabs();
+        }
+
+        function renderPortfolioTabs() {
+            const container = document.getElementById('portfolio-selector');
+            container.innerHTML = '';
+            
+            allPortfolios.forEach(p => {
+                const tab = document.createElement('button');
+                tab.className = `portfolio-tab ${p.id === activePortfolioId ? 'active' : ''}`;
+                tab.innerHTML = `
+                    <span ondblclick="renamePortfolio(${p.id}, '${p.name.replace(/'/g, "\\'")}')"
+                          title="Çift tıkla = Yeniden adlandır">${p.name}</span>
+                    ${allPortfolios.length > 1 ? `<span class="tab-delete" onclick="event.stopPropagation(); deletePortfolioGroup(${p.id})" title="Portföyü Sil">&times;</span>` : ''}
+                `;
+                tab.onclick = () => switchPortfolio(p.id);
+                container.appendChild(tab);
+            });
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'portfolio-add-btn';
+            addBtn.innerText = '+ Yeni Portföy';
+            addBtn.onclick = createNewPortfolio;
+            container.appendChild(addBtn);
+        }
+
+        function switchPortfolio(pid) {
+            activePortfolioId = pid;
+            renderPortfolioTabs();
+            loadPortfolio();
+        }
+
+        async function createNewPortfolio() {
+            const name = prompt('Yeni portföy adını girin:');
+            if (!name || !name.trim()) return;
+            
+            const resp = await fetch('/api/portfolios/create', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: name.trim()})
+            });
+            const data = await resp.json();
+            if (data.error) return alert(data.error);
+            
+            activePortfolioId = data.id;
+            await loadPortfolioTabs();
+            loadPortfolio();
+        }
+
+        async function deletePortfolioGroup(pid) {
+            if (!confirm('Bu portföyü ve içindeki tüm varlıkları silmek istediğinize emin misiniz?')) return;
+            const resp = await fetch(`/api/portfolios/delete/${pid}`, {method: 'DELETE'});
+            if (resp.ok) {
+                if (activePortfolioId === pid) activePortfolioId = null;
+                await loadPortfolioTabs();
+                if (!activePortfolioId && allPortfolios.length > 0) {
+                    activePortfolioId = allPortfolios[0].id;
+                }
+                loadPortfolio();
+            }
+        }
+
+        async function renamePortfolio(pid, currentName) {
+            const newName = prompt('Yeni portföy adı:', currentName);
+            if (!newName || newName.trim() === currentName) return;
+            
+            const resp = await fetch(`/api/portfolios/rename/${pid}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: newName.trim()})
+            });
+            if (resp.ok) {
+                await loadPortfolioTabs();
+            }
+        }
+    </script>
+</body>
+</html>

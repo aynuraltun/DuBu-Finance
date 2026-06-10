@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mevduat Faiz Hesaplayıcı - Dubu Finance</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: #ffffff;
+            --glass-border: #e2e8f0;
+            --neon-blue: #3b82f6;
+            --neon-purple: #8b5cf6;
+        }
+
+        .mevduat-header-container {
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mevduat-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) { .mevduat-layout { grid-template-columns: 1fr; } }
+
+        .glass-card {
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #475569;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            padding: 1rem;
+            border-radius: 12px;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--neon-blue) 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+            font-family: 'Outfit', sans-serif;
+        }
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(59, 130, 246, 0.5);
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .result-label {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .result-val {
+            color: #1e293b;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
+        </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+                <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="mevduat-header-container">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 800;">Vadeli Mevduat Faiz Hesaplama</h1>
+            <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem;">Anaparanızın vade sonundaki stopaj sonrası net getiri analizini yapın.</p>
+        </div>
+
+        <div class="mevduat-layout">
+            <!-- Form Card -->
+            <div class="glass-card">
+                <h3 style="color: var(--neon-blue); font-family:var(--font-display); margin-bottom: 1.5rem; font-size: 1.5rem; font-weight:700;">Hesaplama Parametreleri</h3>
+                
+                <div class="form-group">
+                    <label>Yatırım Tutarı (Anapara ₺)</label>
+                    <input type="number" id="deposit-amount" placeholder="Örn: 100000" value="100000" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Yıllık Faiz Oranı (%)</label>
+                    <input type="number" id="deposit-rate" placeholder="Örn: 45" value="45" min="0" step="any">
+                </div>
+
+                <div class="form-group">
+                    <label>Vade Süresi (Gün)</label>
+                    <input type="number" id="deposit-days" placeholder="Örn: 32" value="32" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Stopaj (Vergi Kesintisi %)</label>
+                    <select id="deposit-tax">
+                        <option value="5" selected>5% Stopaj (6 aya kadar vadeli)</option>
+                        <option value="3">3% Stopaj (1 yıla kadar vadeli)</option>
+                        <option value="0">0% Stopaj (1 yıldan uzun vadeli)</option>
+                        <option value="7.5">7.5% Stopaj (Vadesiz/Döviz)</option>
+                    </select>
+                </div>
+
+                <button class="btn-action" onclick="calculateInterest()">Faiz Getirisi Hesapla</button>
+            </div>
+
+            <!-- Visualization Card -->
+            <div class="glass-card" style="display:flex; flex-direction:column; gap:1.5rem;">
+                <h3 style="color: var(--neon-blue); font-family:var(--font-display); font-size: 1.5rem; font-weight:700;">Vade Sonu Getiri Özeti</h3>
+                
+                <div class="result-card">
+                    <div class="result-row">
+                        <span class="result-label">Brüt Faiz Kazancı:</span>
+                        <span class="result-val" id="res-gross">₺ 0.00</span>
+                    </div>
+                    <div class="result-row" style="color: #ef4444;">
+                        <span class="result-label" style="color: #ef4444;">Stopaj Kesintisi (%<span id="res-tax-rate">5</span>):</span>
+                        <span class="result-val" id="res-tax-val" style="color: #ef4444;">-₺ 0.00</span>
+                    </div>
+                    <div class="result-row" style="color: #10b981; border-top: 2px solid #e2e8f0; padding-top: 0.75rem;">
+                        <span class="result-label" style="color: #10b981;">Net Faiz Getirisi:</span>
+                        <span class="result-val" id="res-net" style="color: #10b981; font-size:1.3rem;">₺ 0.00</span>
+                    </div>
+                    <div class="result-row" style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.15);">
+                        <span class="result-label" style="color: var(--neon-blue);">Toplam Geri Ödeme (Vade Sonu):</span>
+                        <span class="result-val" id="res-total" style="color: var(--neon-blue); font-size: 1.3rem;">₺ 0.00</span>
+                    </div>
+                </div>
+
+                <div style="flex:1; min-height: 200px; position: relative;">
+                    <canvas id="mevduatChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+    <script>
+        let mevduatChart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            calculateInterest();
+        });
+
+        function calculateInterest() {
+            const amount = parseFloat(document.getElementById('deposit-amount').value) || 0;
+            const rate = parseFloat(document.getElementById('deposit-rate').value) || 0;
+            const days = parseInt(document.getElementById('deposit-days').value) || 0;
+            const taxRate = parseFloat(document.getElementById('deposit-tax').value) || 0;
+
+            if (amount <= 0 || rate <= 0 || days <= 0) {
+                return;
+            }
+
+            // Turkish Deposit Interest Calculation Formula:
+            // Gross = (Principal * Rate * Days) / 36500
+            const gross = (amount * rate * days) / 36500;
+            const tax = (gross * taxRate) / 100;
+            const net = gross - tax;
+            const total = amount + net;
+
+            document.getElementById('res-gross').innerText = `₺ ${gross.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-tax-rate').innerText = taxRate;
+            document.getElementById('res-tax-val').innerText = `-₺ ${tax.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-net').innerText = `₺ ${net.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-total').innerText = `₺ ${total.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            updateChart(amount, net, tax);
+        }
+
+        function updateChart(principal, netInterest, tax) {
+            const ctx = document.getElementById('mevduatChart').getContext('2d');
+            if (mevduatChart) mevduatChart.destroy();
+
+            mevduatChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Anapara', 'Net Faiz Getirisi', 'Stopaj Vergisi'],
+                    datasets: [{
+                        data: [principal, netInterest, tax],
+                        backgroundColor: ['#3b82f6', '#10b981', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#475569',
+                                font: { family: 'Outfit', size: 12, weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ₺ ${context.raw.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

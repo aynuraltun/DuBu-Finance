@@ -39,16 +39,34 @@
             </button>
         </div>
         <div id="user-badge" class="user-badge"></div>
-        <nav class="burger-menu" id="burger-menu">
-            <ul>
-                <li class="span-2"><a href="/">Ana Sayfa</a></li>
-                <li><a href="/bist100.html">BİST 100</a></li>
-                <li><a href="/madenler.html" style="border-color:var(--color-primary); color:var(--color-primary)">Kıymetli Madenler</a></li>
-                <li><a href="/takip">Takip Listem</a></li>
-                <li><a href="/halkaarz.html">Halka Arzlar</a></li>
-                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
-               <li id="burger-auth" style="grid-column: span 2;"></li>
-            </ul>
+                        <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -63,45 +81,46 @@
             <div class="left-col">
                 <div class="metals-list" id="metals-grid">
                     <div class="metal-card gold-card">
-                        <div class="metal-header"><span class="metal-name">Ons Altın (XAU)</span> <span class="metal-symbol">$/Ons</span></div>
-                        <div class="metal-stats"><div class="metal-price" id="price-gold">...</div></div>
-                    </div>
-                    <div class="metal-card">
                         <div class="metal-header"><span class="metal-name">Gram Altın</span> <span class="metal-symbol">₺/gr</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-gram">...</div></div>
+                    </div>
+                    <div class="metal-card">
+                        <div class="metal-header"><span class="metal-name">Ons Altın (XAU)</span> <span class="metal-symbol">₺/Ons</span></div>
+                        <div class="metal-stats"><div class="metal-price" id="price-gold">...</div></div>
                     </div>
                     <div class="metal-card">
                         <div class="metal-header"><span class="metal-name">Çeyrek Altın</span> <span class="metal-symbol">₺/Adet</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-ceyrek">...</div></div>
                     </div>
                     <div class="metal-card">
-                        <div class="metal-header"><span class="metal-name">Gümüş (XAG)</span> <span class="metal-symbol">$/Ons</span></div>
+                        <div class="metal-header"><span class="metal-name">Gümüş (XAG)</span> <span class="metal-symbol">₺/Ons</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-silver">...</div></div>
                     </div>
                     <div class="metal-card">
-                        <div class="metal-header"><span class="metal-name">Platin</span> <span class="metal-symbol">$/Ons</span></div>
+                        <div class="metal-header"><span class="metal-name">Platin</span> <span class="metal-symbol">₺/Ons</span></div>
                         <div class="metal-stats"><div class="metal-price" id="price-platinum">...</div></div>
                     </div>
                 </div>
 
                 <div class="charts-grid">
-                    <div class="tv-wrap-sm" style="position:relative; background:#fff; border-radius:12px; overflow:hidden;">
-                        <div class="chart-header" style="flex-direction:column; align-items:flex-start; gap:0.5rem; padding: 1rem;">
-                            <div class="chart-price-block" style="width:100%; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <div class="chart-symbol-badge">ONS ALTIN</div>
-                                    <div class="chart-price" style="font-size:1.4rem;">Yükleniyor...</div>
-                                </div>
-                                <div class="chart-intervals">
-                                    <button onclick="loadNativeChart('GOLD', '1d', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1d">1G</button>
-                                    <button onclick="loadNativeChart('GOLD', '1mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1mo">1A</button>
-                                    <button onclick="loadNativeChart('GOLD', '3mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="3mo">3A</button>
-                                    <button onclick="loadNativeChart('GOLD', '6mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="6mo" class="active">6A</button>
-                                    <button onclick="loadNativeChart('GOLD', '1y', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1y">1Y</button>
-                                </div>
+                    <div style="position:relative; background:var(--color-surface); border-radius:12px; overflow:hidden; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--glass-border); box-shadow: var(--shadow-sm);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-border);">
+                            <div style="font-weight:900; color:var(--color-primary); font-size:1.2rem;">ÇEYREK ALTIN GRAFİĞİ</div>
+                            <div class="chart-price-container" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                                <span class="chart-price" style="font-size: 1.5rem; font-weight: 900; color: var(--color-text); font-family: var(--font-data);">Yükleniyor...</span>
+                                <span class="period-stats" style="font-size: 0.9rem;"></span>
                             </div>
                         </div>
-                        <canvas id="goldChart" style="padding-top:6rem; padding-bottom:1rem;"></canvas>
+                        <div style="height: 320px; position: relative; width: 100%;">
+                            <canvas id="goldChart"></canvas>
+                        </div>
+                        <div class="chart-intervals" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <button onclick="loadNativeChart('CEYREK', '1d', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1d">1G</button>
+                            <button onclick="loadNativeChart('CEYREK', '1mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1mo">1A</button>
+                            <button onclick="loadNativeChart('CEYREK', '3mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="3mo">3A</button>
+                            <button onclick="loadNativeChart('CEYREK', '6mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="6mo" class="active">6A</button>
+                            <button onclick="loadNativeChart('CEYREK', '1y', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true)" data-p="1y">1Y</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,28 +159,41 @@
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
             
-            // Altın Grafiği (Native Chart.js)
-            if(window.loadNativeChart) {
-                loadNativeChart('GOLD', '6mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true);
+            function loadMetalsPrices() {
+                fetch('/api/metals')
+                    .then(r => r.json())
+                    .then(data => {
+                        data.forEach(m => {
+                            const el = document.getElementById('price-' + m.symbol.toLowerCase());
+                            if (el) {
+                                const unit = m.unit || '₺';
+                                if (m.has_bid_ask) {
+                                    const alis_val = m.alis.toLocaleString('tr-TR');
+                                    const satis_val = m.satis.toLocaleString('tr-TR');
+                                    el.innerHTML = `
+                                        <div style="font-size: 0.82rem; font-weight: 700; color: var(--color-text); opacity: 0.8; line-height: 1.3;">Alış: ${alis_val} ${unit}</div>
+                                        <div style="font-size: 1.35rem; font-weight: 900; color: var(--color-text); line-height: 1.3; margin-top: 0.15rem;">Satış: ${satis_val} ${unit}</div>
+                                        <div style="font-size: 0.85rem; font-weight: 700; color: ${m.change >= 0 ? 'var(--color-up)' : 'var(--color-down)'}; margin-top: 0.15rem;">
+                                            ${m.change >= 0 ? '▲' : '▼'} ${m.change.toFixed(2)}%
+                                        </div>
+                                    `;
+                                    el.parentElement.style.height = 'auto';
+                                } else {
+                                    const val = m.price.toLocaleString('tr-TR');
+                                    el.innerHTML = `${val} ${unit} <div style="font-size:0.9rem;color:${m.change>0?'#059669':'#dc2626'}">${m.change>0?'+':''}${m.change}%</div>`;
+                                }
+                            }
+                        });
+                    }).catch(e => console.log('Fiyatlar yüklenmedi.'));
             }
-            
-            // Fiyatları çek
-            fetch('/api/metals')
-                .then(r => r.json())
-                .then(data => {
-                    data.forEach(m => {
-                        const el = document.getElementById('price-' + m.symbol.toLowerCase());
-                        if (el) {
-                            const val = m.price.toLocaleString('tr-TR');
-                            const prefix = m.symbol === 'GRAM' || m.symbol === 'CEYREK' ? '₺' : '$';
-                            el.innerHTML = `${val} ${prefix} <div style="font-size:0.9rem;color:${m.change>0?'#059669':'#dc2626'}">${m.change>0?'+':''}${m.change}%</div>`;
-                        } else if (m.symbol === 'PLATINUM') {
-                            document.getElementById('price-platinum').innerHTML = `${m.price} $ <div style="font-size:0.9rem;color:#666">Paladyum dahil</div>`;
-                        }
-                    });
-                }).catch(e => console.log('Fiyatlar yüklenmedi.'));
+
+            if(window.loadNativeChart) {
+                loadNativeChart('CEYREK', '6mo', 'goldChart', '#f59e0b', 'rgba(245, 158, 11, 0.1)', true);
+            }
+
+            loadMetalsPrices();
+            setInterval(loadMetalsPrices, 750);
                 
-            // Haberleri çek
             fetch('/api/news')
                 .then(r => r.json())
                 .then(news => {
@@ -173,13 +205,11 @@
                     toShow.forEach(n => {
                         const div = document.createElement('div');
                         div.className = 'news-item';
-                        div.innerHTML = `<div class="news-title">${n.title}</div><div class="news-preview">${n.description}...</div><div class="news-date">${n.published}</div>`;
+                        div.innerHTML = `<div class="news-title">${n.title}</div><div class="news-preview">${n.description.substring(0, 100)}...</div><div class="news-date">${n.published}</div>`;
                         div.onclick = () => {
                             document.getElementById('modal-title').textContent = n.title;
                             document.getElementById('modal-date').textContent = n.published;
                             document.getElementById('modal-body').innerHTML = n.description;
-                            const mlink = document.getElementById('modal-link');
-                            if (mlink) mlink.style.display = 'none';
                             document.getElementById('news-modal').classList.add('active');
                         };
                         c.appendChild(div);

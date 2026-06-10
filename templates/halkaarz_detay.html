@@ -37,16 +37,34 @@
         </div>
         <div id="user-badge" class="user-badge"></div>
 
-        <nav class="burger-menu" id="burger-menu">
-            <ul>
-                <li class="span-2"><a href="/">Ana Sayfa</a></li>
-                <li><a href="/bist100.html">BİST 100</a></li>
-                <li><a href="/madenler.html">Kıymetli Madenler</a></li>
-                <li><a href="/takip">Takip Listem</a></li>
-                <li><a href="/halkaarz.html">Halka Arzlar</a></li>
-                <li class="burger-divider" style="grid-column: span 2; border-top: 1px solid #eee; margin:1rem 0;"></li>
-               <li id="burger-auth" style="grid-column: span 2;"></li>
-            </ul>
+                        <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
     <script src="/static/script.js"></script>
@@ -74,7 +92,7 @@
 
         <div class="ipo-description">
             <h2>Şirket Hakkında</h2>
-            <p>{{ ipo.description }}</p>
+            <p style="white-space: pre-wrap;">{{ ipo.description }}</p>
             <br>
             <div style="background:#f1f5f9; padding: 1rem; border-radius: 8px; font-size: 0.9rem; color: #1e293b;">
                 <strong>💡 Analist Notu:</strong> {{ ipo.yontem }} dağıtım ile tüm bireysel yatırımcılara eşit hak tanınacaktır. Belirlenen {{ ipo.fiyat }} fiyat seviyesi, sektör ortalamaları ve iskontolu çarpanlar göz önüne alınarak belirlenmiştir.

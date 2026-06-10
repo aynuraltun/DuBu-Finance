@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Portföy Danışmanı - Dubu Finance</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: #ffffff;
+            --glass-border: #e2e8f0;
+            --neon-blue: #3b82f6;
+            --neon-purple: #8b5cf6;
+        }
+
+        .advisor-header-container {
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #6366f1 100%);
+            color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .advisor-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) { .advisor-layout { grid-template-columns: 1fr; } }
+
+        .glass-card {
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #475569;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            padding: 1rem;
+            border-radius: 12px;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+        .checkbox-row input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+            font-family: 'Outfit', sans-serif;
+        }
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        }
+        .btn-success:hover {
+            box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.5);
+        }
+
+        .advisor-report {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid #cbd5e1;
+            border-left: 4px solid var(--neon-purple);
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-ring {
+            width: 80px; height: 80px;
+            border: 4px solid rgba(139, 92, 246, 0.1);
+            border-top: 4px solid var(--neon-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 3rem auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
+        </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+                <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="advisor-header-container">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 800;">AI Kişiselleştirilmiş Portföy Danışmanı</h1>
+            <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem;">Yatırım hedeflerinize, vade yapınıza ve risk limitlerinize uygun akıllı portföy önerileri alın.</p>
+        </div>
+
+        <div class="advisor-layout">
+            <!-- Sidebar Input Card -->
+            <div class="glass-card" style="height:fit-content">
+                <h3 style="color: var(--neon-purple); font-family:var(--font-display); margin-bottom: 1.5rem; font-size: 1.4rem; font-weight:700;">Yatırım Tercihleri</h3>
+                
+                <div class="form-group">
+                    <label>Toplam Yatırım Tutarı (₺)</label>
+                    <input type="number" id="adv-amount" value="50000" min="1000">
+                </div>
+
+                <div class="form-group">
+                    <label>Risk Seviyeniz</label>
+                    <select id="adv-risk">
+                        <option value="low">Düşük Risk (Muhafazakar)</option>
+                        <option value="medium" selected>Orta Risk (Dengeli)</option>
+                        <option value="high">Yüksek Risk (Agresif / Büyüme)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Yatırım Vadesi</label>
+                    <select id="adv-horizon">
+                        <option value="short">Kısa Vade (1-3 Ay)</option>
+                        <option value="medium" selected>Orta Vade (6-12 Ay)</option>
+                        <option value="long">Uzun Vade (3+ Yıl)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Yatırım Yapmak İstediğiniz Alanlar</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-row"><input type="checkbox" id="sec-hisse" checked> Hisse Senetleri (BİST)</label>
+                        <label class="checkbox-row"><input type="checkbox" id="sec-fon" checked> Yatırım Fonları (TEFAS)</label>
+                        <label class="checkbox-row"><input type="checkbox" id="sec-altin" checked> Değerli Metaller (Altın/Gümüş)</label>
+                        <label class="checkbox-row"><input type="checkbox" id="sec-mevduat" checked> Vadeli Mevduat (TRY)</label>
+                    </div>
+                </div>
+
+                <button class="btn-action" style="margin-top:0.5rem" onclick="generateAIPortfolio()">Portföy Oluştur</button>
+            </div>
+
+            <!-- Main Recommended Portfolio Display -->
+            <div class="glass-card" style="display:flex; flex-direction:column; justify-content:center;">
+                <!-- Loading State -->
+                <div id="adv-loading" style="display:none; text-align:center;">
+                    <h3 style="color:#1e293b; font-weight:700;">AI Modelleme Motoru Çalışıyor</h3>
+                    <p style="color:#64748b; margin-top:0.5rem;">Tercihlerinize uygun en optimum rasyoya sahip varlık dağılımı hesaplanıyor...</p>
+                    <div class="loading-ring"></div>
+                </div>
+
+                <!-- Initial State Placeholder -->
+                <div id="adv-placeholder" style="text-align:center; padding:5rem 2rem; color:#94a3b8;">
+                    <span style="font-size:4rem;">🧠</span>
+                    <h3 style="margin-top:1.5rem; font-weight:700; color:#64748b;">AI Portföy Sihirbazı Hazır</h3>
+                    <p style="margin-top:0.5rem;">Sol taraftan tercihlerinizi seçip butonuna basarak kişiselleştirilmiş portföyünüzü anında oluşturun.</p>
+                </div>
+
+                <!-- Results State -->
+                <div id="adv-result" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid #cbd5e1; padding-bottom:1rem;">
+                        <div>
+                            <h3 style="color:var(--neon-purple); font-weight:800; font-size:1.6rem; margin:0;">Önerilen Akıllı Portföy</h3>
+                            <p style="color:#64748b; margin-top:0.25rem; font-size:0.95rem;">Modelimizin hedeflerinizle hizalı bulduğu dağılım planı.</p>
+                        </div>
+                        <button class="btn-action btn-success" style="width:auto; padding:0.8rem 1.5rem;" onclick="addRecommendedToAccount()">⚡ Bu Portföyü Akıllı Varlık Yönetimime Aktar</button>
+                    </div>
+
+                    <!-- Layout: Report and chart -->
+                    <div style="display:grid; grid-template-columns: 1.3fr 1fr; gap:2rem; margin-bottom:1.5rem;">
+                        <div>
+                            <h4 style="color:#1e293b; font-weight:bold; margin-bottom:0.5rem;">Danışman Raporu ve Strateji:</h4>
+                            <div class="advisor-report" id="adv-report-text">
+                                <!-- JS fill -->
+                            </div>
+                        </div>
+                        <div style="height:220px; position:relative;">
+                            <canvas id="advChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Detailed asset table -->
+                    <h4 style="color:#1e293b; font-weight:bold; margin-bottom:0.75rem;">Varlık Ayrıntıları ve Alım Emirleri:</h4>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
+                            <thead>
+                                <tr style="background:#f8fafc; border-bottom: 2px solid #cbd5e1;">
+                                    <th style="padding:0.75rem; color:#475569;">Varlık Tipi</th>
+                                    <th style="padding:0.75rem; color:#475569;">Sembol</th>
+                                    <th style="padding:0.75rem; color:#475569;">Varlık Adı</th>
+                                    <th style="padding:0.75rem; color:#475569;">Hedef Oran</th>
+                                    <th style="padding:0.75rem; color:#475569;">Tahsis Edilen Tutar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adv-table-body">
+                                <!-- JS fill -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+    <script>
+        let advChart = null;
+        let lastGeneratedDetails = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+        });
+
+        async function generateAIPortfolio() {
+            const amount = parseFloat(document.getElementById('adv-amount').value) || 0;
+            const risk = document.getElementById('adv-risk').value;
+            const horizon = document.getElementById('adv-horizon').value;
+            
+            const sectors = [];
+            if(document.getElementById('sec-hisse').checked) sectors.push('hisse');
+            if(document.getElementById('sec-fon').checked) sectors.push('fon');
+            if(document.getElementById('sec-altin').checked) sectors.push('altin');
+            if(document.getElementById('sec-mevduat').checked) sectors.push('mevduat');
+
+            if(amount < 1000) {
+                alert("Lütfen en az 1,000 ₺ yatırım tutarı girin.");
+                return;
+            }
+            if(sectors.length === 0) {
+                alert("Lütfen en az 1 yatırım alanı seçin.");
+                return;
+            }
+
+            document.getElementById('adv-placeholder').style.display = 'none';
+            document.getElementById('adv-result').style.display = 'none';
+            document.getElementById('adv-loading').style.display = 'block';
+
+            try {
+                const resp = await fetch('/api/ai_portfolio_advisor', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({amount, risk, horizon, sectors})
+                });
+                const data = await resp.json();
+                
+                document.getElementById('adv-loading').style.display = 'none';
+
+                if(data.error) {
+                    alert(data.error);
+                    document.getElementById('adv-placeholder').style.display = 'block';
+                    return;
+                }
+
+                lastGeneratedDetails = data.details;
+
+                // Populate report text
+                document.getElementById('adv-report-text').innerText = data.report;
+
+                // Populate table
+                const tbody = document.getElementById('adv-table-body');
+                tbody.innerHTML = '';
+                
+                const categoryNames = {
+                    'hisse': 'Hisse Senedi (BİST)',
+                    'fon': 'Yatırım Fonu (TEFAS)',
+                    'altin': 'Kıymetli Madenler',
+                    'mevduat': 'Vadeli Mevduat/Nakit'
+                };
+
+                data.details.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr style="border-bottom:1px solid #e2e8f0;">
+                            <td style="padding:0.75rem; font-weight:600; color:#64748b;">${categoryNames[item.category] || item.category}</td>
+                            <td style="padding:0.75rem; font-weight:700; color:var(--neon-purple);">${item.symbol}</td>
+                            <td style="padding:0.75rem; color:#1e293b;">${item.name}</td>
+                            <td style="padding:0.75rem; font-weight:700; color:#1e293b;">%${item.weight.toFixed(2)}</td>
+                            <td style="padding:0.75rem; font-weight:800; color:var(--neon-blue);">₺ ${item.amount.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        </tr>
+                    `;
+                });
+
+                document.getElementById('adv-result').style.display = 'block';
+
+                // Draw chart
+                const labels = [];
+                const chartData = [];
+                Object.entries(data.weights).forEach(([key, val]) => {
+                    labels.push(categoryNames[key] || key);
+                    chartData.push(val);
+                });
+                drawAdvChart(labels, chartData);
+
+            } catch(e) {
+                document.getElementById('adv-loading').style.display = 'none';
+                document.getElementById('adv-placeholder').style.display = 'block';
+                alert("AI portföyü oluşturulurken bir hata oluştu: " + e);
+            }
+        }
+
+        function drawAdvChart(labels, data) {
+            const ctx = document.getElementById('advChart').getContext('2d');
+            if(advChart) advChart.destroy();
+
+            const colors = ['#8b5cf6', '#ec4899', '#f59e0b', '#3b82f6'];
+
+            advChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#475569',
+                                font: { family: 'Outfit', size: 11, weight: 'bold' },
+                                boxWidth: 10,
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function addRecommendedToAccount() {
+            if(lastGeneratedDetails.length === 0) return;
+            
+            if(!confirm("Bu önerilen portföy dağılımını (lot sayıları hesaplanarak) Akıllı Varlık Yönetimi hesabınıza eklemek istiyor musunuz?")) return;
+
+            try {
+                const resp = await fetch('/api/portfolio/add_recommended', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({items: lastGeneratedDetails})
+                });
+                
+                if(resp.ok) {
+                    alert("Önerilen portföy varlıkları başarıyla hesabınıza eklendi! Portföy takibi sayfasına yönlendiriliyorsunuz.");
+                    window.location.href = "/portfolio";
+                } else {
+                    const err = await resp.json();
+                    alert("Ekleme başarısız: " + (err.error || "Sunucu hatası"));
+                }
+            } catch(e) {
+                alert("Bir bağlantı hatası oluştu: " + e);
+            }
+        }
+    </script>
+</body>
+</html>

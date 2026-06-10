@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatırım Simülasyon - Dubu Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .sim-container { max-width: 1000px; margin: 3rem auto; padding: 0 2rem; }
+        .sim-card { background: #fff; padding: 3rem; border-radius: 24px; box-shadow: var(--shadow-lg); border: 1px solid #eee; }
+        .sim-header h1 { font-family: var(--font-display); font-size: 2.5rem; color: var(--color-primary); font-weight: 900; margin-bottom: 1rem; }
+        .sim-header p { color: var(--color-muted); font-size: 1.1rem; margin-bottom: 2rem; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group label { font-weight: 700; color: var(--color-text); font-size: 0.9rem; text-transform: uppercase; }
+        .form-group input { padding: 1rem; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 1rem; font-weight: 600; outline: none; transition: 0.2s; }
+        .form-group input:focus { border-color: var(--color-primary); background: var(--color-primary-light); }
+        
+        .sim-btn { background: var(--color-primary); color: #fff; border: none; padding: 1.2rem; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; width: 100%; }
+        .sim-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(1, 59, 44, 0.2); }
+        
+        .result-panel { margin-top: 3rem; display: none; animation: fadeInUp 0.6s ease; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .result-card { background: var(--color-primary-light); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid rgba(1, 59, 44, 0.1); }
+        .result-lbl { font-size: 0.9rem; color: var(--color-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .result-val { font-size: 2.5rem; font-weight: 900; color: var(--color-primary); font-family: var(--font-data); }
+        
+        .summary-box { background: #f8fafc; padding: 2rem; border-radius: 20px; margin-top: 2rem; border-left: 6px solid var(--color-primary); }
+        .summary-text { font-size: 1.2rem; line-height: 1.6; color: #334155; }
+        .summary-text b { color: var(--color-primary); }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .chart-box { margin-top: 2rem; background: #fff; padding: 1.5rem; border-radius: 20px; border: 1px solid #eee; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="/" class="logo">
+            <span class="logo-main">Dubu</span>
+            <span class="logo-sub">Finance</span>
+        </a>
+        <div class="burger-area">
+            <button class="burger-btn" id="burger-btn" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div id="user-badge" class="user-badge"></div>
+                        <nav class="burger-menu" id="burger-menu">
+            <div class="menu-grid">
+                <div class="menu-category">
+                    <h3>📊 Piyasalar</h3>
+                    <ul>
+                        <li><a href="/bist100.html">BİST 100</a></li>
+                        <li><a href="/madenler.html">Madenler</a></li>
+                        <li><a href="/fonlar">Yatırım Fonları</a></li>
+                        <li><a href="/halkaarz.html">Halka Arzlar</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>🛠️ Araçlar</h3>
+                    <ul>
+                        <li><a href="/simulasyon">Simülasyon</a></li>
+                        <li><a href="/karsilastir">Kıyasla & Analiz</a></li>
+                        <li><a href="/mevduat">Faiz Hesaplama</a></li>
+                        <li><a href="/danisman">AI Portföy Danışmanı</a></li>
+                    </ul>
+                </div>
+                <div class="menu-category">
+                    <h3>👤 Hesabım</h3>
+                    <ul>
+                        <li><a href="/portfolio">Akıllı Varlık Yönetimi</a></li>
+                        <li><a href="/takip">İzleme Listesi</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="sim-container">
+        <div class="sim-card">
+            <div class="sim-header">
+                <h1>🕰️ Simülasyon</h1>
+                <p>Geçmişe bir yolculuk yapın. Eğer o gün yatırım yapsaydınız, bugün ne kadar kazanırdınız?</p>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Yatırım Tarihi (2026+)</label>
+                    <input type="date" id="sim-date" value="2026-01-01" min="2026-01-01" onchange="calculateInitialValue()">
+                </div>
+                <div class="form-group">
+                    <label>Hisse Kodu</label>
+                    <input type="text" id="sim-symbol" placeholder="Örn: ASELS" value="THYAO" oninput="calculateInitialValue()">
+                </div>
+                <div class="form-group">
+                    <label>Adet</label>
+                    <input type="number" id="sim-amount" value="10" min="1" oninput="calculateInitialValue()">
+                </div>
+            </div>
+
+            <div id="initial-value-box" style="background: var(--color-primary-light); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center; font-weight: 700; color: var(--color-primary); display: none;">
+                Tahmini Alış Tutarı: <span id="initial-value-val">0 ₺</span>
+            </div>
+
+            <button class="sim-btn" onclick="runSimulation()">Simülasyonni Çalıştır</button>
+
+            <div id="result-panel" class="result-panel">
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-lbl">Bugünkü Değer</div>
+                        <div id="res-total" class="result-val">0 ₺</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-lbl">Net Kâr / Zarar</div>
+                        <div id="res-pct" class="result-val" style="color: var(--color-up);">+%0</div>
+                    </div>
+                </div>
+
+                <div class="summary-box">
+                    <p class="summary-text" id="res-summary">
+                        Yükleniyor...
+                    </p>
+                </div>
+
+                <div class="chart-box" id="sim-chart-container" style="display: none;">
+                    <canvas id="simChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            calculateInitialValue();
+        });
+
+        let lastCalcTimeout = null;
+        let simChartInstance = null;
+        async function calculateInitialValue() {
+            const sym = document.getElementById('sim-symbol').value.toUpperCase();
+            const date = document.getElementById('sim-date').value;
+            const quantity = document.getElementById('sim-amount').value;
+            const box = document.getElementById('initial-value-box');
+            const valSpan = document.getElementById('initial-value-val');
+
+            if (!sym || !date || !quantity) return;
+
+            clearTimeout(lastCalcTimeout);
+            lastCalcTimeout = setTimeout(async () => {
+                try {
+                    // We can reuse the simulate API with amount=1 to get the price
+                    const res = await fetch(`/api/simulate?symbol=${sym}&date=${date}&amount=1`);
+                    const data = await res.json();
+                    if (!data.error) {
+                        const total = data.buy_price * quantity;
+                        valSpan.textContent = total.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺';
+                        box.style.display = 'block';
+                        box.dataset.total = total;
+                    } else {
+                        box.style.display = 'none';
+                    }
+                } catch (e) { box.style.display = 'none'; }
+            }, 500);
+        }
+
+        async function runSimulation() {
+            const sym = document.getElementById('sim-symbol').value.toUpperCase();
+            const date = document.getElementById('sim-date').value;
+            const quantity = document.getElementById('sim-amount').value;
+            const amount = document.getElementById('initial-value-box').dataset.total || 0;
+            
+            if (amount == 0) {
+                alert("Lütfen geçerli bir sembol ve tarih seçin.");
+                return;
+            }
+
+            const btn = document.querySelector('.sim-btn');
+            btn.textContent = 'Veriler İşleniyor...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/simulate?symbol=${sym}&date=${date}&amount=${amount}`);
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert("Hata: " + data.error);
+                    return;
+                }
+
+                document.getElementById('result-panel').style.display = 'block';
+                document.getElementById('res-total').textContent = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(data.current_value);
+                
+                const pctEl = document.getElementById('res-pct');
+                pctEl.textContent = `%${data.profit_loss_pct > 0 ? '+' : ''}${data.profit_loss_pct}`;
+                pctEl.style.color = data.profit_loss_pct >= 0 ? 'var(--color-up)' : 'var(--color-down)';
+
+                document.getElementById('res-summary').innerHTML = `
+                    <b>${data.buy_date}</b> tarihinde <b>${sym}</b> varlığından <b>${quantity} adet</b> aldınız. <br>
+                    O günkü birim fiyat <b>${data.buy_price} ₺</b> idi ve toplam <b>${new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(amount)}</b> ödediniz. <br><br>
+                    Bugün elinizde toplam <b>${data.current_value.toLocaleString()} ₺</b> değerinde varlık olurdu. 
+                    Bu yatırım size <b>${data.profit_loss.toLocaleString()} ₺</b> ${data.profit_loss >= 0 ? 'kâr' : 'zarar'} sağladı.
+                `;
+
+                // Grafik yükle
+                const chartRes = await fetch(`/api/chart/${sym}?period=5y`);
+                const chartData = await chartRes.json();
+                
+                if (!chartData.error && chartData.dates.length > 0) {
+                    const ctx = document.getElementById('simChart').getContext('2d');
+                    document.getElementById('sim-chart-container').style.display = 'block';
+                    if (simChartInstance) simChartInstance.destroy();
+                    
+                    const growthData = chartData.closes.map(c => (c / chartData.closes[0]) * amount);
+                    
+                    simChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: chartData.dates,
+                            datasets: [{
+                                label: 'Yatırım Değeri (₺)',
+                                data: growthData,
+                                borderColor: data.profit_loss >= 0 ? '#10b981' : '#ef4444',
+                                backgroundColor: data.profit_loss >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                pointRadius: 0,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { display: false },
+                                y: { ticks: { callback: v => v + ' ₺' } }
+                            }
+                        }
+                    });
+                } else {
+                    document.getElementById('sim-chart-container').style.display = 'none';
+                }
+
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+            } catch (err) {
+                alert("Simülasyon sırasında bir hata oluştu.");
+            } finally {
+                btn.textContent = 'Simülasyonni Çalıştır';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
