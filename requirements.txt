@@ -8,3 +8,7 @@ lxml==4.9.3
 whitenoise==6.6.0
 pandas==2.1.1
 textblob==0.17.1
+flask-socketio==5.6.1
+scipy==1.13.1
+numpy==1.26.4
+
