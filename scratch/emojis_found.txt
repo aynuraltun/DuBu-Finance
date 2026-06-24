@@ -1,0 +1,99 @@
+index.py:247: 📈 -> icon = "📈"
+index.py:251: 📉 -> icon = "📉"
+index.py:255: 📊 -> icon = "📊"
+index.py:270: ⚡ -> {"title": "Borsa İstanbul'da Rekor Kapanış ve Yeni Hedefler", "description": "BİST 100 endeksi tüm zamanların en yüksek kapanışını gerçekleştirdi..." + detailed_suffix, "published": "2 Saat Önce", "sentiment_text": "Bu haber piyasayı %85 ihtimalle olumlu etkileyebilir.", "sentiment_color": "#10b981", "sentiment_icon": "⚡"},
+index.py:271: ⚡ -> {"title": "Altın Fiyatlarında Yükseliş Eğilimi Sürüyor", "description": "Küresel piyasalardaki belirsizlikler ve merkez bankalarının faiz kararları sonrasında..." + detailed_suffix, "published": "4 Saat Önce", "sentiment_text": "Bu haber piyasayı %72 ihtimalle olumlu etkileyebilir.", "sentiment_color": "#10b981", "sentiment_icon": "⚡"},
+index.py:272: ⚖ -> {"title": "Gümüş Endüstriyel Talebi Artıyor", "description": "Güneş enerjisi panelleri ve elektrikli araç üretimindeki ivme, gümüşe yönelik talebi..." + detailed_suffix, "published": "5 Saat Önce", "sentiment_text": "Bu haberin piyasa etkisi %40 ihtimalle yatay kalacaktır.", "sentiment_color": "#64748b", "sentiment_icon": "⚖️"}
+README.md:1: 📊 -> # 📊 DuBu Finance - Proje Yapı Rehberi
+README.md:5: 📂 -> ## 📂 Dosya Listesi ve Görevleri
+README.md:7: 🖥 -> ### 🖥️ Backend / Sunucu
+README.md:11: 🎨 -> ### 🎨 Tasarım ve Görsellik (`static/`)
+README.md:14: 📄 -> ### 📄 Kullanıcı Arayüzü (`templates/`)
+README.md:22: 🚀 -> ## 🚀 Çalıştırma Notları
+static/script.js:87: ★☆ -> <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
+static/script.js:119: ★☆ -> btn.textContent = fav ? '★' : '☆';
+static/script.js:362: 🔮 -> periodStats.innerHTML = `<span style="color:#0f766e; font-weight:900; background: rgba(15,118,110,0.1); padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid rgba(15,118,110,0.3); font-size:0.85rem;">🔮 Monte Carlo Yapay Zeka Simülasyonu Hazırlanıyor...</span>`;
+static/script.js:378: 🔮 -> 🔮 Beklenen Ortalama: ${data.expected_final.toLocaleString('tr-TR')} ₺
+static/script.js:381: 🚀 -> 🚀 İyimser Tahmin (%80 Olasılık): ${data.bullish.toLocaleString('tr-TR')} ₺
+static/script.js:384: 📉 -> 📉 Kötümser Tahmin (%20 Olasılık): ${data.bearish.toLocaleString('tr-TR')} ₺
+templates/compare.html:131: 📊 -> <h3>📊 Piyasalar</h3>
+templates/compare.html:140: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/compare.html:147: 👤 -> <h3>👤 Hesabım</h3>
+templates/compare.html:159: 📈 -> <h2>📈 Gelişmiş Varlık Karşılaştırma Terminali</h2>
+templates/compare.html:172: 🔍 -> <h3 style="color:var(--color-primary); font-family:var(--font-display); margin-bottom:1rem;">🔍 1. Varlık Seçimi</h3>
+templates/compare.html:196: 🔍 -> <h3 style="color:#dc2626; font-family:var(--font-display); margin-bottom:1rem;">🔍 2. Varlık Seçimi</h3>
+templates/compare.html:223: 📈 -> 📈 Kümülatif Normalize Performans Grafiği (%)
+templates/compare.html:232: 📊 -> <h3 style="color:var(--color-primary); font-family:var(--font-display); margin-bottom:1rem;">📊 Detaylı Risk/Getiri Karşılaştırma Matrisi</h3>
+templates/index.html:52: 📊 -> <h3>📊 Piyasalar</h3>
+templates/index.html:61: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/index.html:68: 👤 -> <h3>👤 Hesabım</h3>
+templates/hisse.html:29: 📊 -> <h3>📊 Piyasalar</h3>
+templates/hisse.html:38: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/hisse.html:45: 👤 -> <h3>👤 Hesabım</h3>
+templates/hisse.html:60: ☆ -> <button class="star-btn" data-symbol="{{ data.symbol }}" style="font-size:1.5rem;" onclick="toggleFavorite('{{ data.symbol }}', this)">☆</button>
+templates/hisse.html:61: 🔄 -> <button class="sim-btn" id="compare-btn" style="background:var(--color-secondary); padding: 0.6rem 1.2rem; font-size: 0.9rem; border-radius: 10px; font-weight:700; display:flex; align-items:center; gap:0.5rem; width:fit-content; margin:0;">🔄 Varlığı Karşılaştır</button>
+templates/hisse.html:105: 📈 -> 📈 Canlı Performans Grafiği
+templates/hisse.html:116: 🔮 -> <button onclick="loadMonteCarloChart('{{ data.symbol }}', 'stockChart')" data-p="montecarlo" style="background:var(--color-primary-light); color:var(--color-primary); border:1px solid rgba(15,118,110,0.3); font-weight:700;">🔮 Gelecek Tahmini (Monte Carlo)</button>
+templates/hisse.html:128: 💡 -> <h3 style="font-family:var(--font-display); color:var(--color-primary); margin-bottom:1rem; font-size:1.3rem;">💡 Şirket Hakkında</h3>
+templates/hisse.html:136: 🤖 -> <span>🤖</span> AI Duyarlılık Radar Analizi
+templates/hisse.html:195: ⚡ -> <!-- ⚡ Canlı Derinlik & Emir Akışı Card -->
+templates/hisse.html:199: ⚡ -> <span>⚡</span> Canlı Derinlik & Emir Akışı
+templates/hisse.html:239: 📊 -> <h2 style="color:var(--color-primary); font-family:var(--font-display); font-size: 2rem; margin-bottom: 2rem;">📊 Getiri Karşılaştırması</h2>
+templates/fon_detay.html:32: 📊 -> <h3>📊 Piyasalar</h3>
+templates/fon_detay.html:41: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/fon_detay.html:48: 👤 -> <h3>👤 Hesabım</h3>
+templates/fon_detay.html:63: ☆ -> <button class="star-btn" data-symbol="{{ data.symbol }}" style="font-size:1.5rem;" onclick="toggleFavorite('{{ data.symbol }}', this)">☆</button>
+templates/fon_detay.html:64: 🔄 -> <button class="sim-btn" id="compare-btn" style="background:var(--color-secondary); padding: 0.6rem 1.2rem; font-size: 0.9rem; border-radius: 10px; font-weight:700; display:flex; align-items:center; gap:0.5rem; width:fit-content; margin:0;">🔄 Varlığı Karşılaştır</button>
+templates/fon_detay.html:108: 📈 -> 📈 Canlı Performans Grafiği
+templates/fon_detay.html:117: 🔮 -> <button onclick="loadMonteCarloChart('{{ data.symbol }}', 'fundChart')" data-p="montecarlo" style="background:var(--color-primary-light); color:var(--color-primary); border:1px solid rgba(15,118,110,0.3); font-weight:700;">🔮 Gelecek Tahmini (Monte Carlo)</button>
+templates/fon_detay.html:129: 💡 -> <h3 style="font-family:var(--font-display); color:var(--color-primary); margin-bottom:1rem; font-size:1.3rem;">💡 Fon Hakkında</h3>
+templates/fon_detay.html:135: 🥧 -> <div class="allocation-title" style="font-family:var(--font-display); color:var(--color-primary); margin-bottom:1rem; font-size:1.3rem; font-weight:700;">🥧 Portföy Dağılımı</div>
+templates/fon_detay.html:141: ⚡ -> <!-- ⚡ Canlı Derinlik & Emir Akışı Card -->
+templates/fon_detay.html:145: ⚡ -> <span>⚡</span> Canlı Derinlik & Emir Akışı
+templates/fon_detay.html:185: 📊 -> <h2 style="color:var(--color-primary); font-family:var(--font-display); font-size: 2rem; margin-bottom: 2rem;">📊 Fon Karşılaştırması</h2>
+templates/halkaarz.html:37: 📊 -> <h3>📊 Piyasalar</h3>
+templates/halkaarz.html:46: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/halkaarz.html:53: 👤 -> <h3>👤 Hesabım</h3>
+templates/madenler.html:45: 📊 -> <h3>📊 Piyasalar</h3>
+templates/madenler.html:54: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/madenler.html:61: 👤 -> <h3>👤 Hesabım</h3>
+templates/halkaarz_detay.html:43: 📊 -> <h3>📊 Piyasalar</h3>
+templates/halkaarz_detay.html:52: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/halkaarz_detay.html:59: 👤 -> <h3>👤 Hesabım</h3>
+templates/halkaarz_detay.html:80: ☆ -> ☆ Favoriye Ekle
+templates/halkaarz_detay.html:96: 💡 -> <strong>💡 Analist Notu:</strong> {{ ipo.yontem }} dağıtım ile tüm bireysel yatırımcılara eşit hak tanınacaktır. Belirlenen {{ ipo.fiyat }} fiyat seviyesi, sektör ortalamaları ve iskontolu çarpanlar göz önüne alınarak belirlenmiştir.
+templates/halkaarz_detay.html:110: ★☆ -> btn.innerHTML = !isFav ? '★ Takipte' : '☆ Favoriye Ekle';
+templates/halkaarz_detay.html:119: ★ -> btn.innerHTML = '★ Takipte';
+templates/bist30.html:28: 📊 -> <h3>📊 Piyasalar</h3>
+templates/bist30.html:37: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/bist30.html:44: 👤 -> <h3>👤 Hesabım</h3>
+templates/bist30.html:99: ★☆ -> <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
+templates/bist100.html:28: 📊 -> <h3>📊 Piyasalar</h3>
+templates/bist100.html:37: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/bist100.html:44: 👤 -> <h3>👤 Hesabım</h3>
+templates/bist100.html:105: ★☆ -> <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
+templates/fonlar.html:28: 📊 -> <h3>📊 Piyasalar</h3>
+templates/fonlar.html:37: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/fonlar.html:44: 👤 -> <h3>👤 Hesabım</h3>
+templates/fonlar.html:56: 📈 -> <h1 style="color:var(--color-primary); font-family:var(--font-display); font-weight:900;">📈 Yatırım Fonları</h1>
+templates/fonlar.html:103: ★☆ -> <td><button class="star-btn ${isFav?'starred':''}" data-symbol="${sym}" onclick="event.stopPropagation();toggleFavorite('${sym}',this)">${isFav?'★':'☆'}</button></td>
+templates/takip.html:39: 📊 -> <h3>📊 Piyasalar</h3>
+templates/takip.html:48: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/takip.html:55: 👤 -> <h3>👤 Hesabım</h3>
+templates/takip.html:101: ✖ -> <button class="remove-btn" title="Favorilerden Çıkar" onclick="removeFav('${item.symbol}', event)">✖</button>
+templates/simulasyon.html:54: 📊 -> <h3>📊 Piyasalar</h3>
+templates/simulasyon.html:63: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/simulasyon.html:70: 👤 -> <h3>👤 Hesabım</h3>
+templates/simulasyon.html:83: 🕰 -> <h1>🕰️ Simülasyon</h1>
+templates/portfolio.html:287: 📊 -> <h3>📊 Piyasalar</h3>
+templates/portfolio.html:296: 🛠 -> <h3>🛠️ Araçlar</h3>
+templates/portfolio.html:303: 👤 -> <h3>👤 Hesabım</h3>
+templates/portfolio.html:331: ✨ -> <h3 style="color: white; font-family:var(--font-display); margin-bottom: 1.5rem; font-size: 1.5rem;">✨ Yeni Varlık Ekle</h3>
+templates/portfolio.html:337: 📈 -> <button type="button" class="type-btn active" data-type="hisse" onclick="selectAssetType('hisse')">📈 Hisse</button>
+templates/portfolio.html:338: 🥧 -> <button type="button" class="type-btn" data-type="fon" onclick="selectAssetType('fon')">🥧 Fon</button>
+templates/portfolio.html:339: 🟡 -> <button type="button" class="type-btn" data-type="gold" onclick="selectAssetType('gold')">🟡 Altın</button>
+templates/portfolio.html:340: ⚪ -> <button type="button" class="type-btn" data-type="silver" onclick="selectAssetType('silver')">⚪ Gümüş</button>
+templates/portfolio.html:373: 🧠 -> <button class="btn-action btn-ai" onclick="openAIOptimizer()">🧠 AI ile Portföyü Optimize Et</button>
+templates/portfolio.html:411: ✨ -> <span style="font-size: 1.5rem;">✨</span> Optimizasyon Tamamlandı
+templates/portfolio.html:764: ✨ -> <span style="font-size: 1.5rem;">✨</span> Optimizasyon Tamamlandı
+templates/portfolio.html:780: 📈 -> <h4 style="color: white; margin-bottom:0.75rem; font-family:var(--font-display);">📈 Markowitz Verimli Sınırı (Efficient Frontier)</h4>
