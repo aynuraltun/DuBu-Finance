@@ -1,0 +1,135 @@
+================================================================================
+                    D U B U   F I N A N C E   T E R M İ N A L İ
+                       PROJE TANITIM VE SUNUM DOSYASI
+================================================================================
+
+Bu döküman, Dubu Finance Profesyonel Piyasa Terminali'nin yenilenen mimarisini, 
+yapay zeka destekli modüllerini, görsel tasarım geliştirmelerini ve sisteme 
+kazandırılan yeni nesil özellikleri tanıtmak amacıyla hazırlanmıştır.
+
+--------------------------------------------------------------------------------
+İÇİNDEKİLER:
+  1. Vizyon ve Genel Bakış
+  2. Akıllı Varlık Yönetimi ve Sektörel Dağılım Analizi (Yeni!)
+  3. Yapay Zeka Destekli Portföy Sağlığı ve Tavsiye Motoru
+  4. Açık & Koyu Tema Entegrasyonu ve Slider Arayüzü (Yeni!)
+  5. Piyasa İzleme, Grafik Modülleri ve Yerleşim İyileştirmeleri
+  6. Teknik Altyapı ve Veri Sağlayıcıları
+--------------------------------------------------------------------------------
+
+================================================================================
+1. VİZYON VE GENEL BAKIŞ
+================================================================================
+Dubu Finance; bireysel ve kurumsal yatırımcıların hisse senetleri, yatırım fonları,
+kıymetli madenler ve nakit varlıklarını tek bir merkezden izlemelerini, kümülatif
+performans analizi yapmalarını ve yapay zeka ile risk optimizasyonu yapmalarını
+sağlayan, modern web standartlarında inşa edilmiş yeni nesil bir finans terminalidir.
+
+Öne Çıkan Özellikler:
+* Tek Ekrandan Bütünsel Varlık Takibi (Hisse, Fon, Altın, Gümüş, Nakit)
+* Yapay Zeka Destekli Portföy Sağlık Puanı (Çeşitlendirme Skoru)
+* Canlı Fiyat Entegrasyonu (Döviz, BIST Hisseleri, Emtialar)
+* Monte Carlo Simülasyonu ile Gelecek Beklenti Analizi ("AI Beklenti")
+* Halka Arz Takvimi (halkaarz.com API ile sürekli güncel veri)
+* Sentiment (Duygu Durum) Analizli Haber Akışı
+
+================================================================================
+2. AKILLI VARLIK YÖNETİMİ VE SEKTÖREL DAĞILIM ANALİZİ (YENİ!)
+================================================================================
+Portföy Takip ekranı tamamen modernize edilerek "Akıllı Varlık Yönetimi" adını 
+almış ve kullanıcıların varlıklarını sektörel bazda bölüştürerek analiz etmelerini
+sağlayan yeni bir analitik katman eklenmiştir.
+
+Varlıklar sembollerine göre otomatik olarak 7 ana sektöre ayrıştırılır:
+  1. 💻 Teknoloji & Savunma (Örn: ASELS, SDTTR, MIATK, REEDER, YEOTK, TTE vb.)
+  2. ⚡ Enerji (Örn: ENJSA, ASTOR, CWENE, ALFAS, EUPWR, SMRTG vb.)
+  3. 🏥 Sağlık & İlaç (Örn: ECILC, DEVA, RTALB, TRILC, SELEC, MEDTR vb.)
+  4. 🏢 Finans & Holding (Örn: GARAN, AKBNK, ISCTR, YKBNK, KCHOL, SAHOL vb.)
+  5. 🏗️ Sanayi, Emtia & Ulaşım (Örn: THYAO, PGSUS, EREGL, TUPRS, SISE, SASA vb.)
+  6. 🪙 Kıymetli Madenler (Örn: ONS Altın, Gram Altın, Gümüş, Platin vb.)
+  7. 💵 Nakit & Mevduat (Örn: TRY, USD, EUR, GBP ve Nakit Varlıklar)
+
+Görsel Sunum:
+* Her sektör, kendine has premium renk kodlarıyla ayrıştırılmıştır.
+* Portföydeki ağırlıkları oranında animasyonlu ilerleme barları (Progress Bars)
+  üzerinden anlık olarak görselleştirilir.
+* Tutar ve yüzde bazında net ağırlık dağılımı listelenir.
+
+================================================================================
+3. YAPAY ZEKA DESTEKLİ PORTFÖY SAĞLIĞI VE TAVSİYE MOTORU
+================================================================================
+Kullanıcının portföyündeki risk birikimini önlemek amacıyla çalışan Yapay Zeka 
+Algoritması geliştirilmiştir:
+
+* Çeşitlendirme Skoru (Health Score):
+  Portföydeki benzersiz varlık sayısı, varlıkların kendi aralarındaki ağırlık
+  dağılımı ve sektörel yoğunlaşma rasyolarına göre 15 ile 100 arasında dinamik
+  bir puan hesaplanır.
+  
+* Sektörel Yoğunlaşma Cezası:
+  Eğer portföydeki herhangi bir sektörün toplam ağırlığı %50'yi aşarsa, yapay 
+  zeka çeşitlendirme skorundan kırarak "Yoğunlaşma Riski" uyarısı verir.
+
+* Dinamik Yapay Zeka Tavsiyeleri:
+  - Mükemmel Çeşitlendirme (Skor >= 80): Risk dengeli, mevcut yapıyı koruyun.
+  - Dengeli Portföy (Skor 50 - 79): Yoğunlaşan sektörü veya hisseyi azaltıp 
+    farklı sınıflara (Fon, Altın, Nakit vb.) dağıtma tavsiyesi.
+  - Yüksek Risk Konsantrasyonu (Skor < 50): Kritik yoğunlaşma uyarısı. 
+    "AI ile Portföyü Optimize Et" yönlendirmesi.
+
+================================================================================
+4. AÇIK & KOYU TEMA ENTEGRASYONU VE SLIDER ARAYÜZÜ (YENİ!)
+================================================================================
+Terminalin tüm sayfalarında kusursuz çalışan, göz yormayan modern karanlık mod
+(Dark Theme) mimarisi uygulanmıştır.
+
+* Sadece Menüde Yer Alan Premium Slider Tuşu:
+  Kullanım kolaylığı ve görsel temizlik amacıyla tema anahtarı üst çubuk yerine
+  sadece burger menünün en altında şık bir Toggle Switch (Kayar Buton) şeklinde
+  konumlandırılmıştır.
+* Flaşsız Hızlı Geçiş (Anti-Flicker):
+  Sayfa yenilemelerinde veya sayfalar arası geçişlerde yaşanan anlık beyaz ekran
+  flaşını engellemek için `localStorage` tabanlı anlık tema atama kodu
+  sayfanın en tepesinde çalıştırılır.
+* Tam Uyumlu Gece Modu Renkleri:
+  - Grafik Arka Planları: BİST100 ve Madenler gibi Chart.js grafik kutularındaki
+    sabit beyaz arka planlar kaldırılarak karanlık modda otomatik olarak 
+    koyu temaya bürünen `var(--color-surface)` değişkenine bağlanmıştır.
+  - Inputlar, Seçim Kutuları ve Modallar: Karanlık modda şık koyu gri tonları 
+    ve neon çerçevelerle tamamen karanlık mod uyumlu hale getirilmiştir.
+
+================================================================================
+5. PİYASA İZLEME VE YERLEŞİM İYİLEŞTİRMELERİ
+================================================================================
+* BİST100 Grafiği Getiri Optimizasyonu:
+  Kullanıcı talebi doğrultusunda, karmaşıklığı azaltmak amacıyla yalnızca BİST100
+  (XU100) endeks grafiğindeki "Dönem Getirisi" kutusu kaldırılmıştır. Diğer
+  tüm hisse ve maden analizlerinde getiri kutuları gösterilmeye devam eder.
+* Haber Akışı Boşluk Çözümü ("Neler Oluyor?"):
+  Hisse tablosunun yüksekliğine göre haber kutusunun altında oluşan büyük boşluk
+  kodlama hatası giderilmiştir. CSS flexbox esnekliği kazandırılarak haber akışı
+  kutusu kartın yüksekliğine göre dinamik uzar ve iç içe dikey kaydırma sağlar.
+* Entegre Araçlar:
+  Ana menüye eklenen Faiz & Mevduat Hesaplama aracı ile kullanıcılar vadeli 
+  mevduat getirilerini anında simüle edebilirler.
+
+================================================================================
+6. TEKNİK ALTYAPI VE VERİ SAĞLAYICILARI
+================================================================================
+* Backend: Python Flask + Flask-SocketIO (Canlı Anlık Döviz Güncellemeleri)
+* Veritabanı: SQLite3 (Güvenli kullanıcı oturumları ve şifrelenmiş portföyler)
+* Frontend: HTML5, CSS Variables, Native Javascript (Modüler ES6)
+* Grafik Kütüphanesi: Chart.js & Lightweight Charts (TradingView)
+* Veri Entegrasyonları:
+  - Yahoo Finance (Hisse Senedi Tarihsel Verileri)
+  - Altınkaynak Canlı API Servisi (USD, EUR, GBP kurları ile Ons, Gram, Çeyrek, Yarım Altın ve Gümüş için en güncel Alış ve Satış fiyatları entegrasyonu)
+  - halkaarz.com RSS/API (Güncel Halka Arz Takvimi)
+* 4 Kat Daha Hızlı Veri Güncelleme Fikri:
+  - Arka plandaki tüm veri güncelleyici thread'lerin (metals, prices, news) bekleme
+    süreleri 4 kat azaltılarak veri tazeliği maksimum seviyeye çıkarılmıştır.
+  - İstemci tarafında döviz/maden tablosunun yenilenme sıklığı 750ms'den 185ms'ye
+    düşürülerek terminal hissi güçlendirilmiştir.
+
+================================================================================
+Dubu Finance - Yatırımlarınızı Yapay Zeka ile Optimize Edin, Riskleri Dağıtın.
+================================================================================
